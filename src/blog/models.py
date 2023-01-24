@@ -1,5 +1,5 @@
-from datetime import date
-
+from datetime import datetime
+from django.utils.timezone import now
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -30,7 +30,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name = "Category"
-        verbose_name_plural = "Categoriess"
+        verbose_name_plural = "Categories"
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -43,12 +43,12 @@ class Post(models.Model):
         to=Category, verbose_name="Categories", related_name="post_category"
     )
 
-    header = models.CharField("Header", max_length=150)
-    describe = models.CharField("Describe", max_length=400)
+    header = models.CharField("Header", max_length=80)
+    describe = models.CharField("Describe", max_length=180)
     cover = models.ImageField("Cover", upload_to="post/")
     content = models.TextField("Content")
     number_of_views = models.PositiveIntegerField("Number of views", default=0)
-    publication_date = models.DateField("Publication date", default=date.today)
+    publication_date = models.DateTimeField("Publication date", default=now)
     is_raw = models.BooleanField("Is raw?")
 
     def __str__(self):
