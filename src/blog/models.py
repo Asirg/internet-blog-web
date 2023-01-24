@@ -18,7 +18,7 @@ class Tag(models.Model):
 
 class Category(models.Model):
     parent = models.ForeignKey(
-        to="self", verbose_name="Parent", on_delete=models.SET_NULL, blank=True, null=True
+        to="self", verbose_name="Parent", on_delete=models.SET_NULL, blank=True, null=True, related_name="childs"
     )
     
     name = models.CharField("Name", max_length=150)

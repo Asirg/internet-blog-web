@@ -90,13 +90,17 @@ a{
     font-size: var(--text-big-size);
 }
 
-#sub-category{
+.sub-category{
     height: 40px;
     background-color: var(--color-dark-blue);
 
-    display: flex;
+    display: none;
     align-items: center;
     font-size: var(--text-medium-size);
+}
+
+.sub-category.active{
+    display: flex;
 }
 
 .category-menu .item{

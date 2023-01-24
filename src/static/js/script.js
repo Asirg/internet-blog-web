@@ -1,13 +1,14 @@
 active_item = document.querySelector(".item.active");
-sub_categories = document.getElementById("sub-category").children;
+active_sub_category_menu = document.querySelector(".sub-category.active");
+sub_category_menus = document.querySelectorAll(".sub-category");
 
-function func(e){
-    active_item.classList.remove("active")
+function func(e, index){
+    active_item.classList.remove("active");
+    active_sub_category_menu.classList.remove("active");
+
     e.target.classList.add("active");
+    sub_category_menus[index].classList.add("active");
 
     active_item = e.target;
-
-    for (let i = 0; i < sub_categories.length; i++) {
-        sub_categories[i].href = "123";
-    }
+    active_sub_category_menu = sub_category_menus[index];
 }
