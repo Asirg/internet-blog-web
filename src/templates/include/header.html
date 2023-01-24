@@ -28,7 +28,7 @@
         {% for category in categories %}
             <div class="sub-category {% if forloop.counter == 1%}active{% endif %}">
                 {% for sub_category in category.childs.all %}
-                    <a href="sub_category.url" class="item">
+                    <a href="{{ sub_category.url }}" class="item">
                         {{ sub_category }}
                     </a>
                 {% endfor %}
