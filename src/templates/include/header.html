@@ -1,9 +1,11 @@
 {% load blog_tags %}
 <header class="header">
     <div class="user-menu">
-        <span class="logo">
-            Internet_ Blog
-        </span>
+        <a href="{% url 'index' %}">
+            <span class="logo">
+                Internet_ Blog
+            </span>
+        </a>
         <div class="option">
             <span>settings</span>
             <span>profile</span>
@@ -18,7 +20,7 @@
         {% get_main_categories as categories %}
         <div id="main-category">
             {% for category in categories %}
-                <a  href="{{ category.url }}" 
+                <a  href="{% url 'category' category.url %}" 
                     class="item {% if forloop.counter == 1%}active{% endif %}" 
                     onmouseenter="func(event, '{{forloop.counter0}}')">
                     {{ category.name }}

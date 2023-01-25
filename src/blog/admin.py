@@ -25,7 +25,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("id", "header", "author", "publication_date", "is_raw", )
+    list_display = ("id", "header", "author", "display_categories",  "publication_date", "is_raw", )
     list_display_links = ("header", )
     list_editable = ("is_raw", )
     fieldsets = (
@@ -55,6 +55,10 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ("header", "author__username", )
     save_on_top = True
     save_as = True
+
+    def display_categories(self, obj):
+        return ",".join([val[0] for val in list(obj.categories.values_list("name"))])
+
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):

@@ -10,7 +10,7 @@
     <div class="content">
         {% for post in last_update %}
             <div class="element">
-                <img src="{{ post.cover.url }}" >
+                <img src="{{ post.cover.url }}" class="post-img">
                 <div class="post-content">
                     <span class="post-header">{{ post.header }}</span>
                     <span class="post-describe">{{ post.describe }}</span>
@@ -26,7 +26,7 @@
     <div class="content">
         {% for post in most_popular %}
             <div class="element">
-                <img src="{{ post.cover.url }}" >
+                <img src="{{ post.cover.url }}" class="post-img">
                 <div class="post-content">
                     <span class="post-header">{{ post.header }}</span>
                     <span class="post-describe">{{ post.describe }}</span>
@@ -42,7 +42,7 @@
     <div class="content">
         {% for post in news %}
             <div class="element">
-                <img src="{{ post.cover.url }}" >
+                <img src="{{ post.cover.url }}" class="post-img">
                 <div class="post-content">
                     <span class="post-header">{{ post.header }}</span>
                     <span class="post-describe">{{ post.describe }}</span>
