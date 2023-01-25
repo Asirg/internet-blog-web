@@ -2,6 +2,7 @@ from datetime import datetime
 from django.utils.timezone import now
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 
 # Create your models here.
 
@@ -27,6 +28,17 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def get_popular_tags(self):
+        tags = Post.objects.filter(categories__in = [self]).values("tags__name").annotate(Count("tags__name"))
+        return tags
+
+    @property
+    def get_sub_categories(self):
+        return [
+            self.id, * [child["id"] for child in self.childs.all().values("id")]
+        ]
 
     class Meta:
         verbose_name = "Category"
@@ -56,6 +68,18 @@ class Post(models.Model):
 
     def get_comment(self):
         return self.comment_set.filter(parent__isnull=True)
+
+    @property
+    def like_count(self):
+        return self.reaction_set.filter(like=True).count()
+
+    @property
+    def dislike_count(self):
+        return self.reaction_set.filter(like=False).count()
+
+    @property
+    def comment_count(self):
+        return self.comment_set.all().count()
 
     class Meta:
         verbose_name = "Post"
