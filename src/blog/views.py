@@ -25,7 +25,7 @@ class PostByCategoryView(ListView):
         category = Category.objects.get(url=self.kwargs.get("url")).get_sub_categories
         queryset = Post.objects\
                     .filter(categories__in = category)\
-                    .order_by("-publication_date")
+                    .order_by("-publication_date").distinct()
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -33,6 +33,6 @@ class PostByCategoryView(ListView):
         context["category"] = Category.objects.get(url=self.kwargs.get("url"))
         context["popular_posts"] = Post.objects\
                                             .filter(categories__in = context["category"].get_sub_categories)\
-                                            .order_by("-number_of_views")[:5]
+                                            .order_by("-number_of_views").distinct()[:5]
         context["popular_tags"] = context["category"].get_popular_tags[:10]
         return context

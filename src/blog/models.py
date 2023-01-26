@@ -31,14 +31,17 @@ class Category(models.Model):
 
     @property
     def get_popular_tags(self):
-        tags = Post.objects.filter(categories__in = [self]).values("tags__name").annotate(Count("tags__name"))
-        return tags
+        posts = Post.objects.filter(categories__in = self.get_sub_categories).distinct()
+        tags_count = Post.objects\
+                    .filter(id__in = posts)\
+                    .values("tags__name")\
+                    .annotate(Count("tags__name"))\
+                    .order_by("-tags__name__count")
+        return tags_count
 
     @property
     def get_sub_categories(self):
-        return [
-            self.id, * [child["id"] for child in self.childs.all().values("id")]
-        ]
+        return [self] if self.parent else self.childs.all() 
 
     class Meta:
         verbose_name = "Category"
