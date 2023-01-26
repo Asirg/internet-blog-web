@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django import forms
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 from blog.models import Tag, Category, Post, Comment, Reaction
 
@@ -23,6 +25,16 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "url", "parent",)
     list_display_links = ("name", "url", )
 
+class PostAdminForm(forms.ModelForm):
+    content = forms.CharField(
+				widget=CKEditorUploadingWidget(),
+				label="Content"
+		)
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ("id", "header", "author", "display_categories",  "publication_date", "is_raw", )
@@ -39,7 +51,7 @@ class PostAdmin(admin.ModelAdmin):
         }),
         ("Content", 
             {
-                "fields":(("describe", "content", ), )
+                "fields":(("content", "describe",  ), )
         }),
         ("option",
             {
@@ -50,6 +62,7 @@ class PostAdmin(admin.ModelAdmin):
     readonly_fields = ("number_of_views", "publication_date", )
 
     inlines = (CommentInLines, )
+    form = PostAdminForm
 
     list_filter = ("categories", "tags", )
     search_fields = ("header", "author__username", )
