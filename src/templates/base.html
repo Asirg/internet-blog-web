@@ -3,6 +3,7 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        <title>{% block title %}{% endblock title %}</title>
     </head>
     <body>
         {% include 'include/header.html' %}

@@ -1,5 +1,9 @@
 {% extends 'blog/base.html' %}
+
 {% load static %}
+
+{% block title %} Internet_blog - {{ post.header }} {% endblock title %}
+
 {% block content %}
 <div class="post-wrap">
     <div class="post-cover" style="background-image: url({{ post.categories.all.0.cover.url }});">

@@ -1,7 +1,10 @@
 {% extends 'blog/base.html' %}
-{% load static %}
-{% block content %}
 
+{% load static %}
+
+{% block title %} Internet_blog - {{ category.name }} {% endblock title %}
+
+{% block content %}
 <div class="category-search">
     <div class="post-content">
         <div class="category-cover" style="background-image: url({{category.cover.url}})">
