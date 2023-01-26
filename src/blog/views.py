@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 from django.contrib.auth import get_user_model
 
@@ -36,3 +36,7 @@ class PostByCategoryView(ListView):
                                             .order_by("-number_of_views").distinct()[:5]
         context["popular_tags"] = context["category"].get_popular_tags[:10]
         return context
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "blog/post_detail.html"

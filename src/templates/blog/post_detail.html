@@ -1,0 +1,71 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+<div class="post-wrap">
+    <div class="post-cover" style="background-image: url({{ post.categories.all.0.cover.url }});">
+        <span class="post-header">{{ post.header }}</span>
+    </div>
+    <div class="post-content-wrap">
+        <div class="post-content">
+            <div class="post-categories">
+                {% for category in post.categories.all %}
+                    <span class="post-category">
+                        {{ category }}
+                    </span>
+                {% endfor %}
+            </div>
+            <div class="post-tags">
+                <img src="{% static 'image/tags.png'%}"  class="label">
+                {% for tag in post.tags.all %}
+                    <div class="tag-block">
+                        {{ tag }}
+                    </div>
+                {% endfor %}
+            </div>
+            <img src="{{ post.cover.url }}" class="post-content-cover">
+            {{ post.content|safe }}
+        </div>
+        <div class="post-author-wrap">
+            <div class="post-author">
+                <div class="author-header">
+                    <img src="{% static 'image/telegram.png' %}" class="author-icon">
+                    <span>{{ post.author.username }}</span>
+                </div>
+                <div class="author-describe">
+                    text
+                </div>
+                <div class="author-categories">
+                    <div class="post-categories">
+                        {% for category in post.categories.all %}
+                            <span class="post-category">
+                                {{ category }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="author-tags">
+                    <div class="post-tags">
+                        {% for tag in post.tags.all %}
+                            <div class="tag-block">
+                                {{ tag }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="author-stat">
+                    <img src="{% static 'image/like.png' %}" class="label"> 100
+                    <img src="{% static 'image/dislike.png' %}" class="label"> 100
+                    <img src="{% static 'image/comment.png' %}" class="label"> 100
+                </div>
+            </div>
+            <div class="post-author-popular-posts">
+                <span class="header">Most popular</span>
+                <a href="#" class="content-block">
+                    <span class="post-header">Header</span>
+                    <span class="post-describe">text </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

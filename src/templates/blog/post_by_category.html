@@ -4,12 +4,12 @@
 
 <div class="category-search">
     <div class="post-content">
-        <div class="category-cover" style="background-image: url({% static 'image/telegram.png' %})">
+        <div class="category-cover" style="background-image: url({{category.cover.url}})">
             <span class="header">{{ category.name }}</span>
         </div>
         <div class="post-list">
             {% for post in post_list %}
-                <a href="#">
+                <a href="{% url 'post_detail' post.id %}">
                     <div class="post-block">
                         <img src = "{{ post.cover.url }}" class="post-img">
                         <div class="post-inf">
@@ -51,7 +51,7 @@
         </div>
         <div class="popular-posts">
             {% for post in popular_posts %}
-                <a href="#">
+                <a href="{% url 'post_detail' post.id %}">
                     <div class="content-block">
                         <span class="post-header">{{ post.header }}</span>
                         <span class="post-describe">{{ post.describe }}</span>
