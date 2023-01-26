@@ -1,11 +1,12 @@
-{% extends 'base.thml' %}
+{% extends 'base.html' %}
 {% block wrap %}
 <div class="flatpage-wrap">
     <div class="flatpage-header">
+        {% block header %}{% endblock header %}
     </div>
     <div class="flatpage-content">
         {% block content%}
         {% endblock content%}
-    </div>>
+    </div>
 </div>
 {% endblock wrap%}

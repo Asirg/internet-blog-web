@@ -569,3 +569,29 @@ footer .contact{
 .post-author-popular-posts .post-describe{
     font-size: var(--text-medium-size);
 }
+
+.flatpage-wrap{
+    padding: 40px 70px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flatpage-header{
+    margin-bottom: 20px;
+
+    color: var(--color-light-gray);
+    font-size: var(--text-header-size);
+}
+
+.flatpage-content{
+    background-color: var(--color-dark-blue);
+    width: 500px;
+    min-height: 500px;
+    padding: 20px;
+
+    display: flex;
+    color: var(--color-light-gray);
+    font-size: var(--text-big-size);
+}
