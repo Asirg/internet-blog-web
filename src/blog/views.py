@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-from blog.models import Post, Category
+from blog.models import Post, Category, Tag
 
 class IndexView(View):
     def get(self, request):
@@ -40,3 +42,47 @@ class PostByCategoryView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/post_detail.html"
+
+class SearchView(ListView):
+    model = Post
+    template_name = "blog/search.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        q = self.request.GET.get('q')
+        
+        tags = self.request.GET.getlist('tags')
+        categories = self.request.GET.getlist('category')
+
+        sort = self.request.GET.get('sort')
+        sort = sort if sort else "-publication_date"
+
+        queryset = Post.objects.all().order_by(sort)
+        
+        if q:
+            queryset = queryset.filter(header__icontains=q)
+        if tags:
+            queryset = queryset.filter(tags__name__in=tags)
+        if categories:
+            queryset = queryset.filter(categories__name__in = categories)
+
+        return queryset.distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['par'] = {
+            "q": self.request.GET.get("q") if self.request.GET.get("q") else "",
+            "sort": self.request.GET.get('sort') if self.request.GET.get("sort") else "-publication_date",
+            "category_list": self.request.GET.getlist('category'),
+            "tag_list": self.request.GET.getlist('tags') ,
+        }
+        return context
+
+class TagView(View):
+    def get(self, request):
+        print(request.GET)
+        query = request.GET.get('q')
+        if query:
+            return JsonResponse(list(Tag.objects.filter(name__contains=request.GET.get('q')).values("id", "name")), safe=False)
+        else:
+            return JsonResponse([], safe=False)
