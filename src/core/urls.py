@@ -22,7 +22,10 @@ from core import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('blog.urls'))
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('pages/', include('django.contrib.flatpages.urls')),
+    path('user/', include('users.urls')),
+    path('', include('blog.urls')),
 ]
 
 if settings.DEBUG:
