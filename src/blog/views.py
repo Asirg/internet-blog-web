@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from blog.models import Post, Category, Tag
+from blog.models import Post, Category, Tag, Reaction
 
 class IndexView(View):
     def get(self, request):
@@ -86,3 +86,21 @@ class TagView(View):
             return JsonResponse(list(Tag.objects.filter(name__contains=request.GET.get('q')).values("id", "name")), safe=False)
         else:
             return JsonResponse([], safe=False)
+
+class AddReactionPostView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+
+        react = Reaction.objects.update_or_create(
+            author=request.user,
+            post=post,
+            comment=None,
+            defaults={
+                "like":request.POST.get('like'),
+            }
+        )
+
+        return JsonResponse({
+            'likes': post.like_count,
+            'dislikes': post.dislike_count,
+        }, status=200)

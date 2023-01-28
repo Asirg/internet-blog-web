@@ -81,4 +81,4 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Reaction)
 class ReactionAdmin(admin.ModelAdmin):
-    list_display = ("id", "post", "like", "author", )
+    list_display = ("post", "like", "author", )

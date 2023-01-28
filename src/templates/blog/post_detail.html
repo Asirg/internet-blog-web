@@ -28,6 +28,24 @@
             </div>
             <img src="{{ post.cover.url }}" class="post-content-cover">
             {{ post.content|safe }}
+
+            <div class="post-labels">
+                <form action="{% url 'blog:post_reaction' post.id %}" method="post" id="form-reaction">
+                    {% csrf_token %}
+                    <input type="hidden" name="like" value="" id="reaction-value">
+                    <button type="submit">
+                        <img src="{% static 'image/like.png'%}" class="label">
+                        {{ post.like_count }}
+                    </button>
+                    <button type="submit">
+                        <img src="{% static 'image/dislike.png'%}"  class="label">
+                        {{ post.dislike_count }}
+                    </button>
+                </form>
+                <img src="{% static 'image/comment.png'%}"  class="label">
+                {{ post.comment_count }}
+            </div>
+
         </div>
         <div class="post-author-wrap">
             <div class="post-author">
@@ -72,4 +90,37 @@
         </div>
     </div>
 </div>
+<script>
+
+    form = document.getElementById('form-reaction');
+    form_input = document.getElementById('reaction-value');
+    form_buttons = form.querySelectorAll('button');
+
+    form_buttons[0].addEventListener('click', e => {
+        form_input.value = 1;
+    });
+    
+    form_buttons[1].addEventListener('click', e => {
+        form_input.value = 0;
+    });
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        url = e.target.action
+
+        const formData = new FormData();
+        formData.append('like', form_input.value);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(result => {
+            form_buttons[0].lastChild.textContent = result['likes'];
+            form_buttons[1].lastChild.textContent = result['dislikes'];
+        });
+    })
+</script>
 {% endblock content %}
