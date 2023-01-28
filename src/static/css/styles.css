@@ -49,7 +49,7 @@ a{
     align-items: center;
     justify-content: space-between;
 }
-.header .user-menu .option span{
+.header .user-menu .option a{
     margin-left: 24px;
 
     font-size: var(--text-big-size);
@@ -83,6 +83,26 @@ a{
 
     color: black;
     font-size: var(--text-medium-size);
+}
+
+.button-auth{
+    margin-left: 20px;
+
+    border-radius: 50px;
+    padding: 6px 20px;
+
+    color: black;
+    font-size: var(--text-medium-size);
+}
+
+.registration{
+    background-color: var(--color-green);
+}
+.login{
+    background-color: rgb(77, 188, 216);
+}
+.logout{
+    background-color: rgb(170, 67, 67);
 }
 
 .button-signup:hover{
@@ -371,6 +391,7 @@ footer .contact{
 .post-list .post-labels{
     display: flex;
     flex-direction: row;
+    align-items: center;
     font-size: var(--text-medium-size);
     color: var(--color-light-gray);
 }

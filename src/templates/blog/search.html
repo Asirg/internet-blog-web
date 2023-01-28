@@ -79,7 +79,7 @@
     </form>
     <div class="post-list">
         {% for post in post_list %}
-            <a href="{% url 'post_detail' post.id %}">
+            <a href="{% url 'blog:post_detail' post.id %}">
                 <div class="post-block">
                     <img src = "{{ post.cover.url }}" class="post-img">
                     <div class="post-inf">

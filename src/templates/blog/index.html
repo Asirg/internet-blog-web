@@ -13,7 +13,7 @@
     </div>
     <div class="content">
         {% for post in last_update %}
-            <a href="{% url 'post_detail' post.id %}">
+            <a href="{% url 'blog:post_detail' post.id %}">
                 <div class="element">
                     <img src="{{ post.cover.url }}" class="post-img">
                     <div class="post-content">
@@ -31,7 +31,7 @@
     </div>
     <div class="content">
         {% for post in most_popular %}
-            <a href="{% url 'post_detail' post.id %}">
+            <a href="{% url 'blog:post_detail' post.id %}">
                 <div class="element">
                     <img src="{{ post.cover.url }}" class="post-img">
                     <div class="post-content">
@@ -49,7 +49,7 @@
     </div>
     <div class="content">
         {% for post in news %}
-            <a href="{% url 'post_detail' post.id %}">
+            <a href="{% url 'blog:post_detail' post.id %}">
                 <div class="element">
                     <img src="{{ post.cover.url }}" class="post-img">
                     <div class="post-content">
@@ -69,14 +69,6 @@
         {% for author in authors %}
             <div class="author-element">
                 <img src="{% static 'image/telegram.png' %}">
-                <span>{{ author.username }}</span>
-            </div>
-            <div class="author-element">
-                <img src="{% static 'image/telegram.png' %}" >
-                <span>{{ author.username }}</span>
-            </div>
-            <div class="author-element">
-                <img src="{% static 'image/telegram.png' %}" >
                 <span>{{ author.username }}</span>
             </div>
         {% endfor %}
