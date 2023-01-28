@@ -1,26 +1,47 @@
 {% load blog_tags %}
 <header class="header">
     <div class="user-menu">
-        <span class="logo">
-            Internet_ Blog
-        </span>
+        <a href="{% url 'blog:index' %}">
+            <span class="logo">
+                Internet_ Blog
+            </span>
+        </a>
         <div class="option">
-            <span>settings</span>
-            <span>profile</span>
-            <span>...</span>
+            {% if user.is_authenticated == True %}
+                <a href="#">
+                    new post
+                </a>
+                <a href="{% url 'users:profile' %}">
+                    profile
+                </a>
+                <span>...</span>
+            {% endif %}
         </div>
-        <button class="button-signup">
-            sign up
-            
-        </button>
+        <div class="search-sign">
+            <form action="{% url 'blog:search' %}" method="get">
+                {% include 'include/search_input.html' %}
+            </form>
+            {% if user.is_authenticated == False %}
+                <a href="{% url 'users:registration' %}" class="button-auth registration">
+                    registration
+                </a>
+                <a href="{% url 'users:login' %}" class="button-auth login">
+                    login
+                </a>
+            {% else %}
+                <a href="{% url 'users:logout' %}" class="button-auth logout">
+                    logout
+                </a>
+            {% endif %}
+        </div>
     </div>
-    <div class="category-menu">
+    <div class="category-menu" id="header-category-menu">
         {% get_main_categories as categories %}
-        <div id="main-category">
+        <div class="main-category">
             {% for category in categories %}
-                <a  href="{{ category.url }}" 
+                <a  href="{% url 'blog:category' category.url %}" 
                     class="item {% if forloop.counter == 1%}active{% endif %}" 
-                    onmouseenter="func(event, '{{forloop.counter0}}')">
+                    onmouseenter="header_category_select(event, '{{forloop.counter0}}')">
                     {{ category.name }}
                 </a>
             {% endfor %}
@@ -28,7 +49,7 @@
         {% for category in categories %}
             <div class="sub-category {% if forloop.counter == 1%}active{% endif %}">
                 {% for sub_category in category.childs.all %}
-                    <a href="sub_category.url" class="item">
+                    <a href="{% url 'blog:category' sub_category.url %}" class="item">
                         {{ sub_category }}
                     </a>
                 {% endfor %}

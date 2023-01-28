@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block wrap %}
+    <form action="{% url 'users:registration' %}" method="post" id="register-form">
+        {% csrf_token %}
+        <input type="text" name="username">
+        <input type="text" name="email">
+        <input type="text" name="password">
+        <input type="text" name="first_name">
+        <button type="submit">Enter</button>
+    </form>
+    <script>
+        // form = document.getElementById("register-form");
+        // form.addEventListener('submit', e => {
+        //     e.preventDefault();
+        //     console.log("342423");
+        // });
+    </script>
+{% endblock wrap %}
