@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from users.forms import UserRegistrationForm
-from users.models import UserProfile
+from users.models import Profile
 
 class RegistrationView(View):
     def get(self, request):
@@ -19,7 +19,7 @@ class RegistrationView(View):
             new_user = user_form.save(commit=False)
             new_user.set_password(user_form.data['password'])
             new_user.save()
-            UserProfile(
+            Profile(
                 user=new_user,
                 avatar=None,
                 bio="",

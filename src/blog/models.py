@@ -66,10 +66,8 @@ class Post(models.Model):
     publication_date = models.DateTimeField("Publication date", default=now)
     is_raw = models.BooleanField("Is raw?")
 
-    def __str__(self):
-        return self.header
-
-    def get_comment(self):
+    @property
+    def get_comments(self):
         return self.comment_set.filter(parent__isnull=True)
 
     @property
@@ -83,6 +81,9 @@ class Post(models.Model):
     @property
     def comment_count(self):
         return self.comment_set.all().count()
+
+    def __str__(self):
+        return self.header
 
     class Meta:
         verbose_name = "Post"
