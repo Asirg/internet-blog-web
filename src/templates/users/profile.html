@@ -1,4 +1,24 @@
 {% extends 'base.html' %}
+{% load users_tags %}
+{% load static %}
+
 {% block wrap %}
+    <img 
+        src="{% user_avatar user %}"
+    >
+
     {{ user }}
+
+    <form action="{% url 'users:upload_file' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">отправить</button>
+    </form>
+
+    <!-- <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="myfile">
+        <button type="submit">Upload</button>
+      </form> -->
+    
 {% endblock wrap %}

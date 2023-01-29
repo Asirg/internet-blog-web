@@ -5,7 +5,7 @@ class Profile(models.Model):
     user = models.OneToOneField(
         to=User, on_delete=models.CASCADE, related_name="profile"
     )
-    avatar = models.ImageField("avatar", upload_to="user_avatar/", null=True, blank=True)
+    avatar = models.ImageField("avatar", upload_to="user_avatar/", null=True)
     bio = models.TextField("biografi")
 
     @property

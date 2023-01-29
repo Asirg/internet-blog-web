@@ -1,5 +1,6 @@
 {% extends 'blog/base.html' %}
 
+{% load users_tags %}
 {% load static %}
 
 {% block title %} Internet_blog - {{ post.header }} {% endblock title %}
@@ -67,11 +68,7 @@
                     {% for comment in post.get_comments %}
                         <div class="comment-block" id="comment-{{ comment.id }}">
                             <img 
-                                src={% if comment.author.profile.avatar %}
-                                        "{{ comment.author.profile.avatar.url }}"
-                                    {% else %}
-                                        "{% static 'image/anonymous.png' %}"
-                                    {% endif %}
+                                src='{% user_avatar comment.author %}'
                                 class="user-icon">
                             <div class="content">
                                 <span class="username">{{ comment.author.username }}</span>
@@ -156,7 +153,7 @@
         <div class="post-author-wrap">
             <div class="post-author">
                 <div class="author-header">
-                    <img src="{% static 'image/telegram.png' %}" class="author-icon">
+                    <img src="{% user_avatar post.author %}" class="author-icon">
                     <span>{{ post.author.username }}</span>
                 </div>
                 <div class="author-describe">

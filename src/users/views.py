@@ -4,8 +4,10 @@ from django.views.generic.base import View
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.core.files.storage import FileSystemStorage
 
-from users.forms import UserRegistrationForm
+
+from users.forms import UserRegistrationForm, UlpoadFileForm
 from users.models import Profile
 
 class RegistrationView(View):
@@ -53,4 +55,23 @@ def user_logout(request):
 
 class UserProfileView(View):
     def get(self, request):
-        return render(request, "users/profile.html", context={})
+        context = {
+            'form': UlpoadFileForm()
+        }
+        return render(request, "users/profile.html", context=context)
+
+def upload_file(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        fs = FileSystemStorage()
+
+        if fs.exists(f'user_avatar/{request.user.id}.{file.name.split(".")[-1]}'):
+            fs.delete(f'user_avatar/{request.user.id}.{file.name.split(".")[-1]}')
+
+        filepath = fs.save(f'user_avatar/{request.user.id}.{file.name.split(".")[-1]}', file)
+
+        if not request.user.profile.avatar:
+            request.user.profile.avatar = filepath
+            request.user.profile.save()
+
+    return redirect(reverse("users:profile"))
