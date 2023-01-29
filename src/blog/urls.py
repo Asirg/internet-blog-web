@@ -10,5 +10,8 @@ urlpatterns = [
     path('tags/', views.TagView.as_view(), name='tags'),
     path('category/<slug:url>', views.PostByCategoryView.as_view(), name='category'),
     path('post/<int:pk>', views.PostDetailView.as_view(), name='post_detail'),
-    path('post_reaction/<int:pk>', views.AddReactionPostView.as_view(), name='post_reaction')
+    path('post_reaction/<int:pk>', views.AddReactionPostView.as_view(), name='post_reaction'),
+    path('comment/<int:pk>', views.CommentView.as_view(), name="comment"),
+    path('delete_comment/<int:pk>', views.DeleteCommentView.as_view(), name="delete_comment"),
+    path('update_comment/<int:pk>', views.UpdateCommentView.as_view(), name="update_comment"),
 ]

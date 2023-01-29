@@ -9,43 +9,149 @@
     <div class="post-cover" style="background-image: url({{ post.categories.all.0.cover.url }});">
         <span class="post-header">{{ post.header }}</span>
     </div>
-    <div class="post-content-wrap">
-        <div class="post-content">
-            <div class="post-categories">
-                {% for category in post.categories.all %}
-                    <span class="post-category">
-                        {{ category }}
-                    </span>
-                {% endfor %}
-            </div>
-            <div class="post-tags">
-                <img src="{% static 'image/tags.png'%}"  class="label">
-                {% for tag in post.tags.all %}
-                    <div class="tag-block">
-                        {{ tag }}
-                    </div>
-                {% endfor %}
-            </div>
-            <img src="{{ post.cover.url }}" class="post-content-cover">
-            {{ post.content|safe }}
+    <div class="content-wrap">
+        <div class="post-content-wrap">
+            <div class="post-content">
+                <div class="post-categories">
+                    {% for category in post.categories.all %}
+                        <span class="post-category">
+                            {{ category }}
+                        </span>
+                    {% endfor %}
+                </div>
+                <div class="post-tags">
+                    <img src="{% static 'image/tags.png'%}"  class="label">
+                    {% for tag in post.tags.all %}
+                        <div class="tag-block">
+                            {{ tag }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <img src="{{ post.cover.url }}" class="post-content-cover">
+                {{ post.content|safe }}
 
-            <div class="post-labels">
-                <form action="{% url 'blog:post_reaction' post.id %}" method="post" id="form-reaction">
-                    {% csrf_token %}
-                    <input type="hidden" name="like" value="" id="reaction-value">
-                    <button type="submit">
-                        <img src="{% static 'image/like.png'%}" class="label">
-                        {{ post.like_count }}
-                    </button>
-                    <button type="submit">
-                        <img src="{% static 'image/dislike.png'%}"  class="label">
-                        {{ post.dislike_count }}
-                    </button>
-                </form>
-                <img src="{% static 'image/comment.png'%}"  class="label">
-                {{ post.comment_count }}
+                <div class="post-labels">
+                    <form action="{% url 'blog:post_reaction' post.id %}" method="post" id="form-reaction">
+                        {% csrf_token %}
+                        <input type="hidden" name="like" value="" id="reaction-value">
+                        <button type="submit">
+                            <img src="{% static 'image/like.png'%}" class="label">
+                            {{ post.like_count }}
+                        </button>
+                        <button type="submit">
+                            <img src="{% static 'image/dislike.png'%}"  class="label">
+                            {{ post.dislike_count }}
+                        </button>
+                        <img src="{% static 'image/comment.png'%}"  class="label">
+                        {{ post.comment_count }}
+                    </form>
+                </div>
             </div>
-
+            <div class="comment-content">
+                <span class="header" style="font-size:44px">Comments:</span>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'blog:comment' post.id %}" method="post" id="form-comment">
+                        {% csrf_token %}
+                        <input type="hidden" value="" name="parent" id="comment-parent">
+                        <input type="text" value="{{user.username}}" disabled>
+                        <input type="text" placeholder="..." name="content" id="comment-content">
+                        <button type="submit">
+                            отправить
+                        </button>
+                        <button type="button" class="disabled" onclick="cancelCommentParent()" id="parent-cancel">
+                            отменить ответ
+                        </button>
+                    </form>
+                {% endif %}
+                <div>
+                    {% for comment in post.get_comments %}
+                        <div class="comment-block" id="comment-{{ comment.id }}">
+                            <img 
+                                src={% if comment.author.profile.avatar %}
+                                        "{{ comment.author.profile.avatar.url }}"
+                                    {% else %}
+                                        "{% static 'image/anonymous.png' %}"
+                                    {% endif %}
+                                class="user-icon">
+                            <div class="content">
+                                <span class="username">{{ comment.author.username }}</span>
+                                <span class="text">{{ comment.content }}</span>
+                                <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
+                                <div class="comment-action" style="display:flex; flex-direction:row">
+                                    {% if user.is_authenticated %}
+                                        <button class="answer" onclick="setCommentParent('{{ comment.id }}', '{{ comment.author.username }}')">
+                                            ответить
+                                        </button>
+                                        {% if comment.author == user or user.is_staff %}
+                                            <form action="{% url 'blog:delete_comment' comment.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button class="delete" type="submit">
+                                                    удалить
+                                                </button>
+                                            </form>
+                                            <form action="{% url 'blog:update_comment' comment.id %}" method="post" class="form-update">
+                                                {% csrf_token %}
+                                                <button type="button" class="update" onclick="updateComment('{{ comment.id }}')">
+                                                    править
+                                                </button>
+                                                <button type="button" onclick="saveUpdateComment('{{ comment.id }}')"  class="save-update disabled" type="submit">
+                                                    сохранить
+                                                </button>
+                                                <button  type="button" class="cancel disabled" onclick="cancelUpdateComment('{{ comment.id }}')">
+                                                    отмена
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% for answ_comment in comment.get_childs %}
+                            <div class="comment-block tab" id="comment-{{ answ_comment.id }}">
+                                <img 
+                                    src={% if answ_comment.author.profile.avatar %}
+                                            "{{ answ_comment.author.profile.avatar.url }}"
+                                        {% else %}
+                                            "{% static 'image/anonymous.png' %}"
+                                        {% endif %}
+                                    class="user-icon">
+                                <div class="content">
+                                    <span class="username">{{ answ_comment.author.username }}</span>
+                                    <span class="text">{{ answ_comment.content }}</span>
+                                    <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
+                                    <div class="comment-action" style="display:flex; flex-direction:row">
+                                        {% if user.is_authenticated %}
+                                            <button class="answer" onclick="setCommentParent('{{ answ_comment.parent.id }}', '{{ answ_comment.author.username }}')">
+                                                ответить
+                                            </button>
+                                            {% if answ_comment.author == user or user.is_staff %}
+                                                <form action="{% url 'blog:delete_comment' answ_comment.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button class="delete" type="submit">
+                                                        удалить
+                                                    </button>
+                                                </form>
+                                                <form action="{% url 'blog:update_comment' answ_comment.id %}" method="post" class="form-update">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="update" onclick="updateComment('{{ answ_comment.id }}')">
+                                                        править
+                                                    </button>
+                                                    <button type="button" onclick="saveUpdateComment('{{ answ_comment.id }}')"  class="save-update disabled" type="submit">
+                                                        сохранить
+                                                    </button>
+                                                    <button  type="button" class="cancel disabled" onclick="cancelUpdateComment('{{ answ_comment.id }}')">
+                                                        отмета
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
         <div class="post-author-wrap">
             <div class="post-author">
@@ -82,16 +188,17 @@
             </div>
             <div class="post-author-popular-posts">
                 <span class="header">Most popular</span>
-                <a href="#" class="content-block">
-                    <span class="post-header">Header</span>
-                    <span class="post-describe">text </span>
-                </a>
+                {% for post in post.author.profile.most_popular_posts %}
+                    <a href="{% url 'blog:post_detail' post.id %}" class="content-block">
+                        <span class="post-header">{{ post.header }}</span>
+                        <span class="post-describe">{{ post.describe }}</span>
+                    </a>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
 <script>
-
     form = document.getElementById('form-reaction');
     form_input = document.getElementById('reaction-value');
     form_buttons = form.querySelectorAll('button');
@@ -122,5 +229,85 @@
             form_buttons[1].lastChild.textContent = result['dislikes'];
         });
     })
+    // ////////////////////////////////////////////////////////////////
+    form_comment = document.getElementById('form-comment');
+    input_parent = document.getElementById('comment-parent');
+    input_content = document.getElementById('comment-content');
+
+    cancelParentButton = document.getElementById('parent-cancel');
+
+    function setCommentParent(id, username){
+        input_parent.value = id;
+        input_content.value = `${username}, `
+        cancelParentButton.classList.remove('disabled');
+    };
+    function cancelCommentParent(){
+        input_parent.value = '';
+        cancelParentButton.classList.add('disabled');
+    };
+
+    update_mod = false;
+
+    function updateComment(id){
+        if (!update_mod){
+            update_mod = true;
+
+            comment_block = document.getElementById(`comment-${id}`)
+            comment_block.querySelector(".text").classList.add("disabled");
+            comment_block.querySelector(".textarea").classList.remove("disabled");
+
+            comment_block.querySelector(".textarea").value = comment_block.querySelector(".text").innerHTML;
+
+            comment_block.querySelector(".update").classList.add("disabled");
+            comment_block.querySelector(".save-update").classList.remove("disabled");
+            comment_block.querySelector(".cancel").classList.remove("disabled");
+        }
+    };
+
+    function cancelUpdateComment(id){
+        update_mod = false;
+
+        comment_block = document.getElementById(`comment-${id}`);
+        comment_block.querySelector(".text").classList.remove("disabled");
+        comment_block.querySelector(".textarea").classList.add("disabled");
+
+        comment_block.querySelector(".update").classList.remove("disabled");
+        comment_block.querySelector(".save-update").classList.add("disabled");
+        comment_block.querySelector(".cancel").classList.add("disabled");
+    };
+
+    function saveUpdateComment(id){
+        comment_block = document.getElementById(`comment-${id}`);
+
+        text = comment_block.querySelector("textarea[name='content']").value;
+        span_text = comment_block.querySelector("span.text");
+
+
+        if (text != span_text.innerHTML){
+            url = comment_block.querySelector(".form-update").action;
+            csrf_token = comment_block.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+            formData = new FormData();
+            formData.append('like', text);
+            formData.append('csrfmiddlewaretoken', csrf_token);
+            formData.append('content', text);
+
+            console.log(url);
+            console.log(csrf_token);
+            fetch(
+                url, {
+                    method:"post",
+                    body: formData,
+                }
+            ).then(response => response.json())
+            .then(result => {
+                console.log("DONE");
+                span_text.innerHTML = text;
+                cancelUpdateComment(id);
+            });
+        }
+        
+
+    };
 </script>
 {% endblock content %}

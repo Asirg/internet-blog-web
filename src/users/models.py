@@ -1,12 +1,16 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-class UserProfile(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(
         to=User, on_delete=models.CASCADE, related_name="profile"
     )
-    avatar = models.ImageField("avatar", upload_to="user_avatar/", null=True)
+    avatar = models.ImageField("avatar", upload_to="user_avatar/", null=True, blank=True)
     bio = models.TextField("biografi")
+
+    @property
+    def most_popular_posts(self):
+        return self.user.post_set.all().order_by('-number_of_views')[:5]
 
     def __str__(self):
         return self.user.username

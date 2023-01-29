@@ -97,10 +97,15 @@ class Comment(models.Model):
         to=Post, verbose_name="Post", on_delete=models.CASCADE
     )
     parent = models.ForeignKey(
-        to="self", verbose_name="Parent", on_delete=models.CASCADE, blank=True, null=True
+        to="self", verbose_name="Parent", on_delete=models.CASCADE, blank=True, null=True, related_name="childs"
     )
 
     content = models.TextField("Content")
+    date = models.DateTimeField('date', default=now)
+
+    @property
+    def get_childs(self):
+        return self.childs.all().order_by("date")
 
     def __str__(self):
         return f"{self.id}:{self.author}:{self.post}"
