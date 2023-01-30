@@ -9,6 +9,7 @@ from django.core.files.storage import FileSystemStorage
 
 from users.forms import UserRegistrationForm, UlpoadFileForm
 from users.models import Profile
+from users.tasks import celery_task
 
 class RegistrationView(View):
     def get(self, request):
@@ -28,6 +29,8 @@ class RegistrationView(View):
             ).save()
             
             login(request, new_user)
+
+            celery_task.delay()
 
             return redirect(reverse("users:profile"))
 
