@@ -1,11 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from blog.models import Post, Category, Tag, Reaction
+from blog.models import Post, Category, Tag, Reaction, Comment
 
 class IndexView(View):
     def get(self, request):
@@ -13,7 +14,6 @@ class IndexView(View):
             "last_update": Post.objects.all().order_by("-publication_date")[:5],
             "most_popular": Post.objects.all().order_by("-number_of_views")[:5],
             "news": Post.objects.filter(categories__in=[8]).order_by('-publication_date')[:5],
-            "authors": get_user_model().objects.all()[:7],
         }
         return render(request, template_name="blog/index.html", context=context)
 
@@ -80,7 +80,6 @@ class SearchView(ListView):
 
 class TagView(View):
     def get(self, request):
-        print(request.GET)
         query = request.GET.get('q')
         if query:
             return JsonResponse(list(Tag.objects.filter(name__contains=request.GET.get('q')).values("id", "name")), safe=False)
@@ -91,16 +90,58 @@ class AddReactionPostView(View):
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
 
-        react = Reaction.objects.update_or_create(
-            author=request.user,
-            post=post,
-            comment=None,
-            defaults={
-                "like":request.POST.get('like'),
-            }
-        )
-
+        if request.user.is_authenticated:
+            Reaction.objects.update_or_create(
+                author=request.user,
+                post=post,
+                comment=None,
+                defaults={
+                    "like":request.POST.get('like'),
+                }
+            )
+            status = 201
+        else:
+            status=401
+        
         return JsonResponse({
             'likes': post.like_count,
             'dislikes': post.dislike_count,
-        }, status=200)
+        }, status=status)
+
+class CommentView(View):
+    def post(self, request, pk):
+        parent = request.POST.get('parent')
+        content = request.POST.get('content')
+
+        post = get_object_or_404(Post, pk=pk)
+        
+        if parent != '':
+            parent = get_object_or_404(Comment, pk=parent)
+        else:
+            parent = None
+
+        Comment(
+            author=request.user,
+            post=post,
+            parent=parent,
+            content=content,
+        ).save()
+
+        return redirect(reverse('blog:post_detail', kwargs={'pk':pk}))
+
+class DeleteCommentView(View):
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        post_pk = comment.post.pk
+        comment.delete()
+        return redirect(reverse('blog:post_detail', kwargs={'pk':post_pk}))
+
+class UpdateCommentView(View):
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        Comment.objects.filter(pk=comment.pk).update(content=request.POST.get("content"))
+
+        return JsonResponse(
+            {},
+            status=200
+        )
