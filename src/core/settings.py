@@ -171,6 +171,13 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+
+CORS_OGIGIN_WHITELIST = [
+    'http://localhost:8000',
+    'http://localhost:8081',
+    'http://127.0.0.1:8000',
+]
+
 # Ckeditor
 CKEDITOR_CONFIGS = {
     'default': {
