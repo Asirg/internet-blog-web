@@ -66,10 +66,8 @@ class Post(models.Model):
     publication_date = models.DateTimeField("Publication date", default=now)
     is_raw = models.BooleanField("Is raw?")
 
-    def __str__(self):
-        return self.header
-
-    def get_comment(self):
+    @property
+    def get_comments(self):
         return self.comment_set.filter(parent__isnull=True)
 
     @property
@@ -84,6 +82,9 @@ class Post(models.Model):
     def comment_count(self):
         return self.comment_set.all().count()
 
+    def __str__(self):
+        return self.header
+
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
@@ -96,10 +97,15 @@ class Comment(models.Model):
         to=Post, verbose_name="Post", on_delete=models.CASCADE
     )
     parent = models.ForeignKey(
-        to="self", verbose_name="Parent", on_delete=models.CASCADE, blank=True, null=True
+        to="self", verbose_name="Parent", on_delete=models.CASCADE, blank=True, null=True, related_name="childs"
     )
 
     content = models.TextField("Content")
+    date = models.DateTimeField('date', default=now)
+
+    @property
+    def get_childs(self):
+        return self.childs.all().order_by("date")
 
     def __str__(self):
         return f"{self.id}:{self.author}:{self.post}"
