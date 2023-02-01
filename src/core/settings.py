@@ -31,6 +31,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")#
 DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", default=1)))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+CSRF_TRUSTED_ORIGINS = ['http://localhost:1337']
 
 
 # Application definition
@@ -130,15 +131,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    STATIC_DIR
-]
+STATICFILES_FINDERS = (
+'django.contrib.staticfiles.finders.FileSystemFinder',
+'django.contrib.staticfiles.finders.AppDirectoriesFinder'
+)
+
+STATIC_URL = '/static/' 
+STATICFILES_DIRS = [ 
+    os.path.join(BASE_DIR, 'static'), 
+] 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # Default primary key field type
@@ -149,7 +156,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1 
 
 # REDIS and CELERY related settings
-REDIS_HOST = '0.0.0.0'
+# REDIS_HOST = '0.0.0.0'
+REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
 CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'

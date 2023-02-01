@@ -5,14 +5,18 @@ services:
     container_name: internet_blog_web
     build:
       context: ./
-      dockerfile: Dockerfile
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
-    ports:
-      - 8000:8000
+      dockerfile: Dockerfile.prod
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
     env_file:
       - ./.prod.env
     depends_on:
       - db
+    
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
 
   db:
     container_name: internet_blog_db
@@ -23,12 +27,22 @@ services:
       - 5432:5432
     env_file:
      - ./.prod.env.db
+    
+  nginx:
+    container_name: internet_blog_nginx
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
 
   redis:
     container_name: internet_blo_redis
     image: redis
-    ports:
-      - 6379:6379
 
   celery:
     build:
@@ -43,10 +57,12 @@ services:
       context: ./
       dockerfile: Dockerfile
     command: celery -A core flower -l INFO
-    ports:
-      - 5555:5555
     env_file:
       - ./.prod.env
+    ports:
+      - 5555:5555
     
 volumes:
   pg_data:
+  static_volume:
+  media_volume:

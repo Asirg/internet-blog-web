@@ -7,9 +7,11 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from blog.models import Post, Category, Tag, Reaction, Comment
+from blog.tasks import test_task
 
 class IndexView(View):
     def get(self, request):
+        test_task.delay(100)
         context = {
             "last_update": Post.objects.all().order_by("-publication_date")[:5],
             "most_popular": Post.objects.all().order_by("-number_of_views")[:5],
