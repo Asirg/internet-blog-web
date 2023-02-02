@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from blog.models import Post, Category, Tag, Reaction, Comment
+from blog.tasks import test_task
 
 class IndexView(View):
     def get(self, request):
