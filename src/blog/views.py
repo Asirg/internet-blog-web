@@ -1,11 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.http import JsonResponse
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.views.generic.base import View, TemplateView
 
 from blog.models import Post, Category, Tag, Reaction, Comment
-from blog.tasks import test_task
 
 class IndexView(TemplateView):
     template_name = 'blog/index.html'
@@ -87,8 +86,6 @@ class DeleteCommentView(DeleteView):
     def get_success_url(self):
         return reverse('blog:post_detail', kwargs={'pk':self.object.post.id})
 
-
-
 ############################## Json return for fetch
 class UpdateCommentView(View):
     def post(self, request, pk):
@@ -99,6 +96,7 @@ class UpdateCommentView(View):
             {},
             status=200
         )
+
 class AddReactionPostView(View):
     def post(self, request, pk):
         if request.user.is_authenticated:
