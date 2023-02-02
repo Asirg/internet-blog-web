@@ -1,65 +1,62 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
-from django.views.generic import ListView, DetailView
-from django.views.generic.base import View
-from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic.base import View, TemplateView
 
 from blog.models import Post, Category, Tag, Reaction, Comment
 from blog.tasks import test_task
 
-class IndexView(View):
-    def get(self, request):
-        context = {
-            "last_update": Post.objects.all().order_by("-publication_date")[:5],
-            "most_popular": Post.objects.all().order_by("-number_of_views")[:5],
-            "news": Post.objects.filter(categories__in=[8]).order_by('-publication_date')[:5],
-        }
-        return render(request, template_name="blog/index.html", context=context)
-
-class PostByCategoryView(ListView):
-    model = Post
-    template_name = "blog/post_by_category.html"
-
-    paginate_by = 10
-
-    def get_queryset(self):
-        category = Category.objects.get(url=self.kwargs.get("url")).get_sub_categories
-        queryset = Post.objects\
-                    .filter(categories__in = category)\
-                    .order_by("-publication_date").distinct()
-        return queryset
+class IndexView(TemplateView):
+    template_name = 'blog/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["category"] = Category.objects.get(url=self.kwargs.get("url"))
-        context["popular_posts"] = Post.objects\
-                                            .filter(categories__in = context["category"].get_sub_categories)\
-                                            .order_by("-number_of_views").distinct()[:5]
-        context["popular_tags"] = context["category"].get_popular_tags[:10]
+        context['last_posts'] = Post.objects.all().order_by('-publication_date')[:5]
+        context['popular_posts'] = Post.objects.all().order_by('-number_of_views')[:5]
+        context['last_news_posts'] = Post.objects.filter(categories__in=[8]).order_by('-publication_date')[:5]
         return context
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = "blog/post_detail.html"
+    
+class PostByCategoryView(ListView):
+    model = Post
+    paginate_by = 10
+
+    template_name = 'blog/post_by_category.html'
+
+    def get_queryset(self):
+        categories = Category.objects.get(url=self.kwargs.get('url')).get_sub_categories
+        print(Category.objects.get(url=self.kwargs.get('url')))
+        queryset = Post.objects\
+                    .filter(categories__in=categories)\
+                    .order_by('-publication_date').distinct()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.get(url=self.kwargs.get('url'))
+        context['popular_posts'] = Post.objects\
+                                            .filter(categories__in=context['category'].get_sub_categories)\
+                                            .order_by('-number_of_views').distinct()[:5]
+        context['popular_tags'] = context['category'].get_popular_tags[:10]
+        return context
 
 class SearchView(ListView):
     model = Post
-    template_name = "blog/search.html"
     paginate_by = 10
 
+    template_name = 'blog/search.html'
+
     def get_queryset(self):
+        queryset = Post.objects.all().order_by(sort)
+
         q = self.request.GET.get('q')
-        
         tags = self.request.GET.getlist('tags')
         categories = self.request.GET.getlist('category')
+        sort = self.request.GET.get('sort', '-number_of_views')
 
-        sort = self.request.GET.get('sort')
-        sort = sort if sort else "-publication_date"
-
-        queryset = Post.objects.all().order_by(sort)
-        
         if q:
             queryset = queryset.filter(header__icontains=q)
         if tags:
@@ -71,27 +68,41 @@ class SearchView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['par'] = {
-            "q": self.request.GET.get("q") if self.request.GET.get("q") else "",
-            "sort": self.request.GET.get('sort') if self.request.GET.get("sort") else "-publication_date",
-            "category_list": self.request.GET.getlist('category'),
-            "tag_list": self.request.GET.getlist('tags') ,
-        }
+        context['q'] = self.request.GET.get('q', '')
+        context['sort'] = self.request.GET.get('sort', '-number_of_views')
+        context['category_list'] = self.request.GET.getlist('category')
+        context['tag_list'] = self.request.GET.getlist('tags') 
         return context
 
-class TagView(View):
-    def get(self, request):
-        query = request.GET.get('q')
-        if query:
-            return JsonResponse(list(Tag.objects.filter(name__contains=request.GET.get('q')).values("id", "name")), safe=False)
-        else:
-            return JsonResponse([], safe=False)
+############################## POST methods
+class CommentView(CreateView):
+    model = Comment
+    fields = ('post', 'author', 'parent', 'content', )
 
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs={'pk':self.request.POST.get('post')})
+
+class DeleteCommentView(DeleteView):
+    model = Comment
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs={'pk':self.object.post.id})
+
+
+
+############################## Json return for fetch
+class UpdateCommentView(View):
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        Comment.objects.filter(pk=comment.pk).update(content=request.POST.get("content"))
+
+        return JsonResponse(
+            {},
+            status=200
+        )
 class AddReactionPostView(View):
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-
         if request.user.is_authenticated:
+            post = get_object_or_404(Post, pk=pk)
             Reaction.objects.update_or_create(
                 author=request.user,
                 post=post,
@@ -102,47 +113,15 @@ class AddReactionPostView(View):
             )
             status = 201
         else:
-            status=401
+            status = 401
         
         return JsonResponse({
             'likes': post.like_count,
             'dislikes': post.dislike_count,
         }, status=status)
 
-class CommentView(View):
-    def post(self, request, pk):
-        parent = request.POST.get('parent')
-        content = request.POST.get('content')
-
-        post = get_object_or_404(Post, pk=pk)
-        
-        if parent != '':
-            parent = get_object_or_404(Comment, pk=parent)
-        else:
-            parent = None
-
-        Comment(
-            author=request.user,
-            post=post,
-            parent=parent,
-            content=content,
-        ).save()
-
-        return redirect(reverse('blog:post_detail', kwargs={'pk':pk}))
-
-class DeleteCommentView(View):
-    def post(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
-        post_pk = comment.post.pk
-        comment.delete()
-        return redirect(reverse('blog:post_detail', kwargs={'pk':post_pk}))
-
-class UpdateCommentView(View):
-    def post(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
-        Comment.objects.filter(pk=comment.pk).update(content=request.POST.get("content"))
-
-        return JsonResponse(
-            {},
-            status=200
-        )
+class TagJsonView(View):
+    def get(self, request):
+        q = request.GET.get('q')
+        queryset = Tag.objects.filter(name__contains=q).values("id", "name")[:6]
+        return JsonResponse(list(queryset), safe=False)

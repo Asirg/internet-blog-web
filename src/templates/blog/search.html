@@ -16,13 +16,13 @@
                         name="category"
                         value="{{ category.name }}"
                         id="{{ category.name }}"
-                        {% if category.name in par.category_list %}
+                        {% if category.name in category_list %}
                             checked
                         {% endif %}
                     >
                     <label 
                         for="{{ category.name }}" 
-                        class="item  {% if category.name in par.category_list %}active{% endif %}"
+                        class="item  {% if category.name in category_list %}active{% endif %}"
                         onmouseenter="search_category_select(event, '{{forloop.counter0}}')"
                         onclick="check_category(event, '{{forloop.counter0}}')"
                     >{{ category.name }}</label>
@@ -36,13 +36,13 @@
                             name="category"
                             value="{{ sub_category.name }}"
                             id="{{ sub_category.name }}"
-                            {% if sub_category.name in par.category_list %}
+                            {% if sub_category.name in category_list %}
                                 checked
                             {% endif %}
                         >
                         <label 
                             for="{{ sub_category.name }}" 
-                            class="item  {% if sub_category.name in par.category_list %}active{% endif %}"
+                            class="item  {% if sub_category.name in category_list %}active{% endif %}"
                             onclick="check_subcategory(event, '{{ category.name }}')"
                         >{{ sub_category.name }}</label>
                     {% endfor %}
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="post-tags" id="added-tags-list">
-                    {% for tag in par.tag_list %}
+                    {% for tag in tag_list %}
                         <div class="tag-block" onclick="this.remove()">
                             {{ tag }}
                             <input type="hidden" name="tags" value="{{tag}}">
@@ -67,10 +67,9 @@
                 </div>
             </div>
             <div >
-                <select name="sort"> <!--Supplement an id here instead of using 'name'-->
-                    <option value="number_of_views" selected>by popular, ascending</option>
-                    <option value="-number_of_views">by popular, descending</option>
-
+                <select name="sort">
+                    <option value="number_of_views">by popular, ascending</option>
+                    <option value="-number_of_views" selected>by popular, descending</option>
                     <option value="publication_date">by date, ascending</option>
                     <option value="-publication_date">by date, descending</option>
                 </select>
@@ -109,4 +108,5 @@
         {% endfor %}
     </div>
 </div>
+<script type="text/javascript" src="{% static 'js/search.js'%}"></script>
 {% endblock content %}
