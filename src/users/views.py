@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.views.generic.base import View, TemplateView
-from django.views.generic import DetailView, CreateView, UpdateView
-from django.contrib.auth.models import User
+from django.views.generic.base import TemplateView
+from django.views.generic import DetailView, CreateView
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 
 from users.forms import UlpoadFileForm
