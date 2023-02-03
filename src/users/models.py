@@ -5,8 +5,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
         to=User, on_delete=models.CASCADE, related_name='profile'
     )
-    avatar = models.ImageField('avatar', upload_to='user_avatar/', null=True)
-    bio = models.TextField('biografi')
+    avatar = models.ImageField('avatar', upload_to='user_avatar/', null=True, blank=True)
+    bio = models.TextField('biografi', default='', blank=True)
     subscription = models.BooleanField('subscription', default=True)
 
     @property
