@@ -23,7 +23,7 @@ class Category(models.Model):
     )
     
     name = models.CharField("Name", max_length=150)
-    cover = models.ImageField("Poster", upload_to="category/")
+    cover = models.ImageField("Poster", upload_to="category/", null=True, blank=True)
     url = models.SlugField("url", unique=True)
 
     def __str__(self):

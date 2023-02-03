@@ -1,0 +1,27 @@
+{% extends 'blog/base.html' %}
+
+{% load blog_tags %}
+{% load static %}
+
+{% block title %} Internet_blog - new post {% endblock title %}
+
+{% block content %}
+<div>
+    <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name != 'author' %}
+                <div class="fieldWrapper">
+                    {{ field.label_tag }} {{ field }}
+                </div>
+            {% else %}
+                <div class="fieldWrapper">
+                    {{ field.label_tag }}
+                    <input type="text" name="author" value="{{ user.id }}" readonly>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <button type="submit" >submit</button>
+    </form>
+</div>
+{% endblock content %}

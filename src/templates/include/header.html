@@ -7,10 +7,12 @@
             </span>
         </a>
         <div class="option">
-            {% if user.is_authenticated == True %}
-                <a href="#">
+            {% if 'blog.add_post' in perms %}
+                <a href="{% url 'blog:create_post' %}">
                     new post
                 </a>
+            {% endif %}
+            {% if user.is_authenticated == True %}
                 <a href="{% url 'users:profile' user.id %}">
                     profile
                 </a>

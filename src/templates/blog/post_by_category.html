@@ -7,14 +7,17 @@
 {% block content %}
 <div class="category-search">
     <div class="post-content">
-        <div class="category-cover" style="background-image: url({{category.cover.url}})">
+        <div 
+            class="category-cover" 
+            {% if category.cover %} style="background-image: url({{ category.cover.url }})" {% endif %}
+            >
             <span class="header">{{ category.name }}</span>
         </div>
         <div class="post-list">
             {% for post in post_list %}
                 <a href="{% url 'blog:post_detail' post.id %}">
                     <div class="post-block">
-                        <img src = "{{ post.cover.url }}" class="post-img">
+                        <img src ="{{ post.cover.url }}" class="post-img">
                         <div class="post-inf">
                             <div class="post-text">
                                 <span class="post-header">{{ post.header }}</span>

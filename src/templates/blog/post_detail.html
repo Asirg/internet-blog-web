@@ -7,12 +7,23 @@
 
 {% block content %}
 <div class="post-wrap">
-    <div class="post-cover" style="background-image: url({{ post.categories.all.0.cover.url }});">
+    <div 
+        class="post-cover" 
+        {% if post.categories.all.0.cover %}
+            style="background-image: url({{ post.categories.all.0.cover.url }});"
+        {% endif %}
+        >
         <span class="post-header">{{ post.header }}</span>
     </div>
     <div class="content-wrap">
         <div class="post-content-wrap">
             <div class="post-content">
+                {% if post.author == user or 'blog.delete_post' in perms %}
+                    <form action="{% url 'blog:delete_post' post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">delete</button>
+                    </form>
+                {% endif %}
                 <div class="post-categories">
                     {% for category in post.categories.all %}
                         <span class="post-category">
@@ -87,7 +98,7 @@
                                         <button class="answer" onclick="setCommentParent('{{ comment.id }}', '{{ comment.author.username }}')">
                                             ответить
                                         </button>
-                                        {% if comment.author == user or user.is_staff %}
+                                        {% if comment.author == user or 'blog.delete_comment' in perms or post.author == user %}
                                             <form action="{% url 'blog:delete_comment' comment.id %}" method="post">
                                                 {% csrf_token %}
                                                 <button class="delete" type="submit">
@@ -129,7 +140,7 @@
                                             <button class="answer" onclick="setCommentParent('{{ answ_comment.parent.id }}', '{{ answ_comment.author.username }}')">
                                                 ответить
                                             </button>
-                                            {% if answ_comment.author == user or user.is_staff %}
+                                            {% if answ_comment.author == user or 'blog.delete_comment' in perms %}
                                                 <form action="{% url 'blog:delete_comment' answ_comment.id%}" method="post">
                                                     {% csrf_token %}
                                                     <input type="hidden" value="{{ answ_comment.id }}" name="comment">
