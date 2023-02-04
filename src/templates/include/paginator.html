@@ -1,0 +1,35 @@
+{% load blog_tags %}
+{% if page_obj.paginator.num_pages > 1 %}
+    {% link_page_with_args 1 args  %}
+    <div class="paginantion-wrap">
+        {% if page_obj.has_previous %}
+            {% if page_obj.number|add:'-3' > 0 %}
+                <a href="{% link_page_with_args 1 args %}">&laquo; 1</a>
+                ...
+            {% endif %}
+
+            {% if page_obj.number|add:'-2' > 0 %}
+                <a href="{% link_page_with_args page_obj.number|add:'-2' args %}">{{ page_obj.number|add:'-2' }}</a>
+            {% endif %}
+
+            <a href="{% link_page_with_args page_obj.number|add:'-1' args %}">{{ page_obj.number|add:'-1' }}</a>
+        {% endif %}
+
+        <span class="current">
+            |{{ page_obj.number }}|
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="{% link_page_with_args page_obj.number|add:1 args %}">{{ page_obj.number|add:1 }}</a>
+
+            {% if page_obj.number|add:1 < page_obj.paginator.num_pages %}
+                <a href="{% link_page_with_args page_obj.number|add:2 args %}">{{ page_obj.number|add:2 }}</a>
+            {% endif %}
+
+            {% if page_obj.number|add:2 < page_obj.paginator.num_pages %}
+                ...
+                <a href="{% link_page_with_args page_obj.paginator.num_pages args %}">{{ page_obj.paginator.num_pages }} &raquo;</a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}

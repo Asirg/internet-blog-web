@@ -29,7 +29,6 @@ class PostByCategoryView(ListView):
 
     def get_queryset(self):
         categories = Category.objects.get(url=self.kwargs.get('url')).get_sub_categories
-        print(Category.objects.get(url=self.kwargs.get('url')))
         queryset = Post.objects\
                     .filter(categories__in=categories)\
                     .order_by('-publication_date').distinct()
@@ -52,7 +51,7 @@ class SearchView(ListView):
 
     def get_queryset(self):
         q = self.request.GET.get('q')
-        tags = self.request.GET.getlist('tags')
+        tags = self.request.GET.getlist('tag')
         categories = self.request.GET.getlist('category')
         sort = self.request.GET.get('sort', '-number_of_views')
 
@@ -69,10 +68,12 @@ class SearchView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['q'] = self.request.GET.get('q', '')
-        context['sort'] = self.request.GET.get('sort', '-number_of_views')
-        context['category_list'] = self.request.GET.getlist('category')
-        context['tag_list'] = self.request.GET.getlist('tags') 
+        context['args'] = {
+            'q':self.request.GET.get('q', ''),
+            'sort':self.request.GET.get('sort', '-number_of_views'),
+            'category':self.request.GET.getlist('category'),
+            'tag':self.request.GET.getlist('tag') ,
+        }
         return context
 
 ############################## POST methods
