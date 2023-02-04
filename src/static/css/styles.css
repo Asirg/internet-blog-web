@@ -799,3 +799,25 @@ footer .contact{
 .tab{
     margin-left: 40px;
 }
+
+
+
+
+
+.paginantion-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.paginantion-wrap .current{
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--color-light-gray);
+}
+
+.paginantion-wrap {
+    font-size: 18px;
+}

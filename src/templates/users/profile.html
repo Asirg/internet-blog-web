@@ -1,17 +1,85 @@
-{% extends 'base.html' %}
+{% extends 'users/base.html' %}
 {% load users_tags %}
 {% load static %}
 
-{% block wrap %}
-    <img 
-        src="{% user_avatar user %}"
-    >
+{% block content %}
+    <div class="user-avatar">
+        {% if profile.user == user %}
+            <form action="{% url 'users:upload_file' %}" method="post" enctype="multipart/form-data" id="form-file">
+                {% csrf_token %}
+                <label for="id-file">
+                    <img src="{% user_avatar profile %}">
+                </label>
+                <input type="file" name="file" accept="image/png, image/jpeg" required id="id-file">
+            </form>
+        {% else %}
+           <img src="{% user_avatar profile %}">
+        {% endif %}
+    </div>
+    <div class="wrap-profile">
+        <h1>
+            {{ profile.user.username }}
+        </h1>
+        <div class="profile">
+            12312342 344444 444444 4444444
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            {% if 'users.delete_profile' in perms or profile.user.id == user.id %}
+                <form action="{% url 'users:delete_user' profile.user.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">delete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    <style>
+        img{
+            display: block;
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
+        }
+        #id-file{
+            display: none;
+        }
+        .user-avatar{
+            background-color: black;
+            height: 250px;
+            width: 250px;
+            border-radius: 50%;
+            position: absolute;
 
-    {{ user }}
-
-    <form action="{% url 'users:upload_file' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">отправить</button>
-    </form>
-{% endblock wrap %}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        img{
+            height: 200px;
+            width: 200px;
+            border-radius: 100px;
+        }
+        .wrap-profile{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .wrap-profile h1{
+            margin: 40px 0px;
+        }
+        .profile{
+            width: calc(100% - 250px);
+            height: 500px;
+            background-color:cadetblue;
+        }
+    </style>
+    <script>
+        document.getElementById('id-file').addEventListener('change', e=>{
+            document.querySelector('#form-file').submit();
+        })
+    </script>
+{% endblock content %}

@@ -82,7 +82,7 @@ document.getElementById("add-tags-input").addEventListener('input', e => {
 
                         let adtag_input = document.createElement("input");
                         adtag_input.type = "hidden";
-                        adtag_input.name = "tags";
+                        adtag_input.name = "tag";
                         adtag_input.value = value['name'];
                         adtag.appendChild(adtag_input);
 

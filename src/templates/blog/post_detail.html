@@ -86,11 +86,13 @@
                 <div>
                     {% for comment in post.get_comments %}
                         <div class="comment-block" id="comment-{{ comment.id }}">
-                            <img 
-                                src='{% user_avatar comment.author %}'
-                                class="user-icon">
+                            <a href="{% url 'users:profile' comment.author.profile.id %}">
+                                <img src='{% user_avatar comment.author.profile %}' class="user-icon">
+                            </a>
                             <div class="content">
-                                <span class="username">{{ comment.author.username }}</span>
+                                <a href="{% url 'users:profile' comment.author.profile.id %}">
+                                    <span class="username">{{ comment.author.username }}</span>
+                                </a>
                                 <span class="text">{{ comment.content }}</span>
                                 <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
                                 <div class="comment-action" style="display:flex; flex-direction:row">
@@ -124,15 +126,13 @@
                         </div>
                         {% for answ_comment in comment.get_childs %}
                             <div class="comment-block tab" id="comment-{{ answ_comment.id }}">
-                                <img 
-                                    src={% if answ_comment.author.profile.avatar %}
-                                            "{{ answ_comment.author.profile.avatar.url }}"
-                                        {% else %}
-                                            "{% static 'image/anonymous.png' %}"
-                                        {% endif %}
-                                    class="user-icon">
+                                <a href="{% url 'users:profile' answ_comment.author.profile.id %}">
+                                    <img src='{% user_avatar answ_comment.author.profile %}' class="user-icon">
+                                </a>
                                 <div class="content">
-                                    <span class="username">{{ answ_comment.author.username }}</span>
+                                    <a href="{% url 'users:profile' answ_comment.author.profile.id %}"></a>
+                                        <span class="username">{{ answ_comment.author.username }}</span>
+                                    </a>
                                     <span class="text">{{ answ_comment.content }}</span>
                                     <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
                                     <div class="comment-action" style="display:flex; flex-direction:row">
@@ -173,8 +173,10 @@
         <div class="post-author-wrap">
             <div class="post-author">
                 <div class="author-header">
-                    <img src="{% user_avatar post.author %}" class="author-icon">
-                    <span>{{ post.author.username }}</span>
+                    <a href="{% url 'users:profile' post.author.profile.id %}">
+                        <img src="{% user_avatar post.author.profile %}" class="author-icon">
+                        <span>{{ post.author.username }}</span>
+                    </a>
                 </div>
                 <div class="author-describe">
                     text

@@ -1,12 +1,12 @@
 from django.views.generic.base import TemplateView
-from django.views.generic import DetailView, CreateView
+from django.views.generic import DetailView, CreateView, DeleteView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 
-from users.forms import UlpoadFileForm
 from users.models import Profile
 
 class UserRegistrationView(CreateView):
@@ -41,13 +41,20 @@ class UserLoginView(TemplateView):
         return self.get(request)
 
 class UserProfileView(DetailView):
-    model = User
+    model = Profile
     template_name = 'users/profile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = UlpoadFileForm()
-        return context
+class DeleteUserView(PermissionRequiredMixin, DeleteView):
+    model = User
+
+    permission_required = 'users.delete_profile'
+
+    def has_permission(self):
+        permission = super().has_permission()
+        is_owner =  self.request.user.id == self.kwargs['pk']
+        return is_owner or permission
+    def get_success_url(self):
+        return reverse('blog:index')
 
 ############################## functions
 def user_logout(request):
@@ -70,4 +77,4 @@ def upload_file(request):
         request.user.profile.avatar = filepath
         request.user.profile.save()
 
-    return redirect(reverse("users:profile", kwargs={'pk':request.user.id}))
+    return redirect(reverse("users:profile", kwargs={'pk':request.user.profile.id}))
