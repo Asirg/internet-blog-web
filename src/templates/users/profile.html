@@ -19,21 +19,47 @@
     <div class="wrap-profile">
         <h1>
             {{ profile.user.username }}
+            
         </h1>
         <div class="profile">
-            12312342 344444 444444 4444444
-            <div>1</div>
-            <div>1</div>
-            <div>1</div>
-            <div>1</div>
-            <div>1</div>
-            <div>1</div>
             {% if 'users.delete_profile' in perms or profile.user.id == user.id %}
-                <form action="{% url 'users:delete_user' profile.user.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">delete</button>
-                </form>
+                <div class="profile-block">
+                    <h1 class="header">Admin Panel</h1>
+                    <form action="{% url 'users:delete_user' profile.user.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">delete</button>
+                    </form>
+                </div>
             {% endif %}
+            <div class="profile-block">
+                <h1 class="header">Statictics</h1>
+                {{statictics_all}}
+                {{statistics_by_category}}
+                <div class="post-labels">
+                    <h3 class="header">All</h3>
+                        <img src="{% static 'image/like.png'%}" class="label">
+                        100
+                        <img src="{% static 'image/dislike.png'%}"  class="label">
+                        100
+                        <img src="{% static 'image/comment.png'%}"  class="label">
+                        100
+                        <div class="post-tags">
+                    </div>
+                </div>
+                <div class="comment-list">
+                    <h3 class="header">By categories</h3>
+                </div>
+            </div>
+            <div class="profile-block">
+                <h1 class="header">Last posts</h1>
+                <div class="posts-list">
+                </div>
+            </div>
+            <div class="profile-block">
+                <h1 class="header">Comments</h1>
+                <div class="comments-list">
+                </div>
+            </div>
         </div>
     </div>
     <style>
@@ -47,7 +73,7 @@
             display: none;
         }
         .user-avatar{
-            background-color: black;
+            background-color: #2F303A;
             height: 250px;
             width: 250px;
             border-radius: 50%;
@@ -69,12 +95,36 @@
             align-items: center;
         }
         .wrap-profile h1{
-            margin: 40px 0px;
+            margin: 50px 0px;
         }
         .profile{
-            width: calc(100% - 250px);
+            width: calc(100% - 300px);
             height: 500px;
-            background-color:cadetblue;
+            background-color:#464967;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile h1{
+            margin: 10px 0px;
+            font-size: 34px;
+        }
+
+        .profile h3{
+            margin: 0px;
+        }
+        
+        .profile .profile-block{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile .post-labels{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
         }
     </style>
     <script>

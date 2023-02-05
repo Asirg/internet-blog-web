@@ -11,7 +11,7 @@ class Profile(models.Model):
 
     @property
     def most_popular_posts(self):
-        return self.user.post_set.all().order_by('-number_of_views')[:5]
+        return self.user.posts.all().order_by('-number_of_views')[:5]
 
     def __str__(self):
         return self.user.username
