@@ -9,7 +9,8 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Count, Q, Avg, Sum, When, Case
 
 from users.models import Profile
-from blog.models import Category
+from users import service
+from blog.models import Comment, Post
 
 class UserRegistrationView(CreateView):
     model = User
@@ -48,27 +49,8 @@ class UserProfileView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         user = self.object.user
-
-        context['statictics_all'] = {
-            **user.comments.all().aggregate(comments_count=Count('id')),
-            **user.posts.all().aggregate(
-                post_count=Count('id'),
-                number_of_vies_sum=Sum('number_of_views')
-            ),
-            **user.posts.all().aggregate(
-                likes = Count('id', filter=Q(reactions__like=True)),
-                dislike = Count('id', filter=Q(reactions__like=False)),
-            ),
-        }
-        context['statistics_by_category'] = Category.objects.all().annotate(
-                count = Count('post_category__id', filter=Q(post_category__author=user)),
-                likes = Count('post_category__reactions__id', filter=Q(post_category__reactions__like=True) & Q(post_category__author=user)),
-                dislikes = Count('post_category__reactions__id', filter=Q(post_category__reactions__like=False) & Q(post_category__author=user)),
-                number_of_views_sum = Sum('post_category__number_of_views', filter=Q(post_category__author=user))
-        ).filter(count__gt=0).values('name', 'count', 'likes', 'dislikes')
-        return context
+        return {**context, **service.get_context_for_profile(user)}
 
 class DeleteUserView(PermissionRequiredMixin, DeleteView):
     model = User
@@ -81,6 +63,14 @@ class DeleteUserView(PermissionRequiredMixin, DeleteView):
         return is_owner or permission
     def get_success_url(self):
         return reverse('blog:index')
+
+class UserProfilePostsView(DetailView):
+    model = Profile
+    template_name = 'users/user_posts.html'
+
+class UserProfileCommentsView(DetailView):
+    model = Profile
+    template_name = 'users/user_comments.html'
 
 ############################## functions
 def user_logout(request):
