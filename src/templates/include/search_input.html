@@ -1,6 +1,6 @@
 {% load static %}
 <div class="search-block-input">
-    <input type="text" placeholder="search..." class="search-input" value="{{ par.q }}" name="q">
+    <input type="text" placeholder="search..." class="search-input" value="{{ args.q }}" name="q">
     <button type="submit" class="search-button">
         <img src="{% static '/image/search.png'%}">
     </button>
