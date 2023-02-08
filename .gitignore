@@ -127,3 +127,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 src/media/*
+src/static/image/post.png
+src/static/image/views.png
+src/static/image/free-icon-thumb-up-412630.png
+src/static/image/comment.png
+src/static/image/search.png
+src/static/image/dislike.png
+src/static/image/like.png
+src/static/image/tags.png

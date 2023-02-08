@@ -23,7 +23,7 @@ class Category(models.Model):
     )
     
     name = models.CharField("Name", max_length=150)
-    cover = models.ImageField("Poster", upload_to="category/")
+    cover = models.ImageField("Poster", upload_to="category/", null=True, blank=True)
     url = models.SlugField("url", unique=True)
 
     def __str__(self):
@@ -49,7 +49,7 @@ class Category(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(
-        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE
+        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE, related_name='posts'
     )
     tags = models.ManyToManyField(
         to=Tag, verbose_name="Tags", related_name="post_tag", blank=True
@@ -72,11 +72,11 @@ class Post(models.Model):
 
     @property
     def like_count(self):
-        return self.reaction_set.filter(like=True).count()
+        return self.reactions.filter(like=True).count()
 
     @property
     def dislike_count(self):
-        return self.reaction_set.filter(like=False).count()
+        return self.reactions.filter(like=False).count()
 
     @property
     def comment_count(self):
@@ -91,7 +91,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE
+        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE, related_name='comments'
     )
     post = models.ForeignKey(
         to=Post, verbose_name="Post", on_delete=models.CASCADE
@@ -117,13 +117,13 @@ class Comment(models.Model):
 
 class Reaction(models.Model):
     author = models.ForeignKey(
-        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE
+        to=get_user_model(), verbose_name="Author", on_delete=models.CASCADE, related_name='reactions'
     )
     post = models.ForeignKey(
-        to=Post, verbose_name="Post", on_delete=models.CASCADE, blank=True, null=True
+        to=Post, verbose_name="Post", on_delete=models.CASCADE, blank=True, null=True, related_name='reactions'
     )
     comment = models.ForeignKey(
-        to=Comment, verbose_name="Comment", on_delete=models.CASCADE, blank=True, null=True
+        to=Comment, verbose_name="Comment", on_delete=models.CASCADE, blank=True, null=True, related_name='reactions'
     )
 
     like = models.BooleanField("Is like?")

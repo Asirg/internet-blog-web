@@ -7,12 +7,23 @@
 
 {% block content %}
 <div class="post-wrap">
-    <div class="post-cover" style="background-image: url({{ post.categories.all.0.cover.url }});">
+    <div 
+        class="post-cover" 
+        {% if post.categories.all.0.cover %}
+            style="background-image: url({{ post.categories.all.0.cover.url }});"
+        {% endif %}
+        >
         <span class="post-header">{{ post.header }}</span>
     </div>
     <div class="content-wrap">
         <div class="post-content-wrap">
             <div class="post-content">
+                {% if post.author == user or 'blog.delete_post' in perms %}
+                    <form action="{% url 'blog:delete_post' post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">delete</button>
+                    </form>
+                {% endif %}
                 <div class="post-categories">
                     {% for category in post.categories.all %}
                         <span class="post-category">
@@ -32,7 +43,13 @@
                 {{ post.content|safe }}
 
                 <div class="post-labels">
-                    <form action="{% url 'blog:post_reaction' post.id %}" method="post" id="form-reaction">
+                    <form   action="{% url 'blog:post_reaction' post.id %}" 
+                            method="post"
+                            id="form-reaction"
+                            {% if not user.is_authenticated %}
+                                class="dis"
+                            {% endif %}
+                            >
                         {% csrf_token %}
                         <input type="hidden" name="like" value="" id="reaction-value">
                         <button type="submit">
@@ -51,8 +68,10 @@
             <div class="comment-content">
                 <span class="header" style="font-size:44px">Comments:</span>
                 {% if user.is_authenticated %}
-                    <form action="{% url 'blog:comment' post.id %}" method="post" id="form-comment">
+                    <form action="{% url 'blog:add_comment' %}" method="post" id="form-comment">
                         {% csrf_token %}
+                        <input type="hidden" value="{{ post.id }}" name="post">
+                        <input type="hidden" value="{{ user.id }}" name="author">
                         <input type="hidden" value="" name="parent" id="comment-parent">
                         <input type="text" value="{{user.username}}" disabled>
                         <input type="text" placeholder="..." name="content" id="comment-content">
@@ -67,11 +86,13 @@
                 <div>
                     {% for comment in post.get_comments %}
                         <div class="comment-block" id="comment-{{ comment.id }}">
-                            <img 
-                                src='{% user_avatar comment.author %}'
-                                class="user-icon">
+                            <a href="{% url 'users:profile' comment.author.profile.id %}">
+                                <img src='{% user_avatar comment.author.profile %}' class="user-icon">
+                            </a>
                             <div class="content">
-                                <span class="username">{{ comment.author.username }}</span>
+                                <a href="{% url 'users:profile' comment.author.profile.id %}">
+                                    <span class="username">{{ comment.author.username }}</span>
+                                </a>
                                 <span class="text">{{ comment.content }}</span>
                                 <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
                                 <div class="comment-action" style="display:flex; flex-direction:row">
@@ -79,7 +100,7 @@
                                         <button class="answer" onclick="setCommentParent('{{ comment.id }}', '{{ comment.author.username }}')">
                                             ответить
                                         </button>
-                                        {% if comment.author == user or user.is_staff %}
+                                        {% if comment.author == user or 'blog.delete_comment' in perms or post.author == user %}
                                             <form action="{% url 'blog:delete_comment' comment.id %}" method="post">
                                                 {% csrf_token %}
                                                 <button class="delete" type="submit">
@@ -105,15 +126,13 @@
                         </div>
                         {% for answ_comment in comment.get_childs %}
                             <div class="comment-block tab" id="comment-{{ answ_comment.id }}">
-                                <img 
-                                    src={% if answ_comment.author.profile.avatar %}
-                                            "{{ answ_comment.author.profile.avatar.url }}"
-                                        {% else %}
-                                            "{% static 'image/anonymous.png' %}"
-                                        {% endif %}
-                                    class="user-icon">
+                                <a href="{% url 'users:profile' answ_comment.author.profile.id %}">
+                                    <img src='{% user_avatar answ_comment.author.profile %}' class="user-icon">
+                                </a>
                                 <div class="content">
-                                    <span class="username">{{ answ_comment.author.username }}</span>
+                                    <a href="{% url 'users:profile' answ_comment.author.profile.id %}"></a>
+                                        <span class="username">{{ answ_comment.author.username }}</span>
+                                    </a>
                                     <span class="text">{{ answ_comment.content }}</span>
                                     <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
                                     <div class="comment-action" style="display:flex; flex-direction:row">
@@ -121,9 +140,10 @@
                                             <button class="answer" onclick="setCommentParent('{{ answ_comment.parent.id }}', '{{ answ_comment.author.username }}')">
                                                 ответить
                                             </button>
-                                            {% if answ_comment.author == user or user.is_staff %}
-                                                <form action="{% url 'blog:delete_comment' answ_comment.id %}" method="post">
+                                            {% if answ_comment.author == user or 'blog.delete_comment' in perms %}
+                                                <form action="{% url 'blog:delete_comment' answ_comment.id%}" method="post">
                                                     {% csrf_token %}
+                                                    <input type="hidden" value="{{ answ_comment.id }}" name="comment">
                                                     <button class="delete" type="submit">
                                                         удалить
                                                     </button>
@@ -153,8 +173,10 @@
         <div class="post-author-wrap">
             <div class="post-author">
                 <div class="author-header">
-                    <img src="{% user_avatar post.author %}" class="author-icon">
-                    <span>{{ post.author.username }}</span>
+                    <a href="{% url 'users:profile' post.author.profile.id %}">
+                        <img src="{% user_avatar post.author.profile %}" class="author-icon">
+                        <span>{{ post.author.username }}</span>
+                    </a>
                 </div>
                 <div class="author-describe">
                     text
@@ -195,116 +217,5 @@
         </div>
     </div>
 </div>
-<script>
-    form = document.getElementById('form-reaction');
-    form_input = document.getElementById('reaction-value');
-    form_buttons = form.querySelectorAll('button');
-
-    form_buttons[0].addEventListener('click', e => {
-        form_input.value = 1;
-    });
-    
-    form_buttons[1].addEventListener('click', e => {
-        form_input.value = 0;
-    });
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        url = e.target.action
-
-        const formData = new FormData();
-        formData.append('like', form_input.value);
-        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-
-        fetch(url, {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(result => {
-            form_buttons[0].lastChild.textContent = result['likes'];
-            form_buttons[1].lastChild.textContent = result['dislikes'];
-        });
-    })
-    // ////////////////////////////////////////////////////////////////
-    form_comment = document.getElementById('form-comment');
-    input_parent = document.getElementById('comment-parent');
-    input_content = document.getElementById('comment-content');
-
-    cancelParentButton = document.getElementById('parent-cancel');
-
-    function setCommentParent(id, username){
-        input_parent.value = id;
-        input_content.value = `${username}, `
-        cancelParentButton.classList.remove('disabled');
-    };
-    function cancelCommentParent(){
-        input_parent.value = '';
-        cancelParentButton.classList.add('disabled');
-    };
-
-    update_mod = false;
-
-    function updateComment(id){
-        if (!update_mod){
-            update_mod = true;
-
-            comment_block = document.getElementById(`comment-${id}`)
-            comment_block.querySelector(".text").classList.add("disabled");
-            comment_block.querySelector(".textarea").classList.remove("disabled");
-
-            comment_block.querySelector(".textarea").value = comment_block.querySelector(".text").innerHTML;
-
-            comment_block.querySelector(".update").classList.add("disabled");
-            comment_block.querySelector(".save-update").classList.remove("disabled");
-            comment_block.querySelector(".cancel").classList.remove("disabled");
-        }
-    };
-
-    function cancelUpdateComment(id){
-        update_mod = false;
-
-        comment_block = document.getElementById(`comment-${id}`);
-        comment_block.querySelector(".text").classList.remove("disabled");
-        comment_block.querySelector(".textarea").classList.add("disabled");
-
-        comment_block.querySelector(".update").classList.remove("disabled");
-        comment_block.querySelector(".save-update").classList.add("disabled");
-        comment_block.querySelector(".cancel").classList.add("disabled");
-    };
-
-    function saveUpdateComment(id){
-        comment_block = document.getElementById(`comment-${id}`);
-
-        text = comment_block.querySelector("textarea[name='content']").value;
-        span_text = comment_block.querySelector("span.text");
-
-
-        if (text != span_text.innerHTML){
-            url = comment_block.querySelector(".form-update").action;
-            csrf_token = comment_block.querySelector("input[name='csrfmiddlewaretoken']").value;
-
-            formData = new FormData();
-            formData.append('like', text);
-            formData.append('csrfmiddlewaretoken', csrf_token);
-            formData.append('content', text);
-
-            console.log(url);
-            console.log(csrf_token);
-            fetch(
-                url, {
-                    method:"post",
-                    body: formData,
-                }
-            ).then(response => response.json())
-            .then(result => {
-                console.log("DONE");
-                span_text.innerHTML = text;
-                cancelUpdateComment(id);
-            });
-        }
-        
-
-    };
-</script>
+<script type="text/javascript" src="{% static 'js/post_detail.js' %}"></script>
 {% endblock content %}
