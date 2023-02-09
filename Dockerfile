@@ -12,6 +12,7 @@ COPY ./req.txt .
 RUN pip install -r req.txt
 
 COPY ./src .
+COPY ./run.sh .
 
 RUN chmod +x ./run.sh
 
