@@ -1,6 +1,5 @@
 from django.db.models import Q, Sum, Count
 
-from users.models import Profile
 from blog.models import Category
 
 

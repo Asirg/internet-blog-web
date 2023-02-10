@@ -12,7 +12,7 @@
                     new post
                 </a>
             {% endif %}
-            {% if user.is_authenticated == True %}
+            {% if user.is_authenticated == True and user.profile %}
                 <a href="{% url 'users:profile' user.profile.id %}">
                     profile
                 </a>
