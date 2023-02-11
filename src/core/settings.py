@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-
+    'django_filters',
     'ckeditor',
     'ckeditor_uploader',
     'blog',

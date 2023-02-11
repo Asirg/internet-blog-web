@@ -1,6 +1,5 @@
 {% load blog_tags %}
 {% if page_obj.paginator.num_pages > 1 %}
-    {% link_page_with_args 1 args  %}
     <div class="paginantion-wrap">
         {% if page_obj.has_previous %}
             {% if page_obj.number|add:'-3' > 0 %}
