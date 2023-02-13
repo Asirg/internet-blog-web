@@ -59,7 +59,7 @@ class Post(models.Model):
     )
 
     header = models.CharField("Header", max_length=80)
-    describe = models.CharField("Describe", max_length=180)
+    describe = models.CharField("Describe", max_length=90)
     cover = models.ImageField("Cover", upload_to="post/")
     content = models.TextField("Content")
     number_of_views = models.PositiveIntegerField("Number of views", default=0)

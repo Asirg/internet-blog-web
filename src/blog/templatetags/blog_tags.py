@@ -27,10 +27,20 @@ def get_main_categories() -> QuerySet[Category]:
     return Category.objects.filter(parent__isnull=True)
 
 @register.simple_tag()
-def get_popular_posts(category: Category, count: int = 5) -> QuerySet[Post]:
-    return Post.objects\
-            .filter(categories__in=category.get_sub_categories)\
-            .order_by('-number_of_views').distinct()[:count]
+def get_last_posts(category: str = "", count: int = 5) -> QuerySet[Post]:
+    queryset = Post.objects.all().order_by('-publication_date')
+    if category:
+        category = Category.objects.get(name=category)
+        queryset = queryset.filter(categories__in=category.get_sub_categories).distinct()
+    return queryset[:count]
+
+@register.simple_tag()
+def get_popular_posts(category: str = '', count: int = 5) -> QuerySet[Post]:
+    queryset = Post.objects.all().order_by('-number_of_views')
+    if category:
+        category = Category.objects.get(name=category)
+        queryset = queryset.filter(categories__in=category.get_sub_categories).distinct()
+    return queryset[:count]
 
 @register.simple_tag()
 def get_popular_tags(category: Category, count: int =10) -> QuerySet[Tag]:

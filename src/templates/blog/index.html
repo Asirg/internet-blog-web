@@ -1,63 +1,19 @@
 {% extends 'blog/base.html' %}
 
 {% load blog_tags %}
-{% load static %}
+{% load blog_elements %}
 
 {% block title %} Internet_blog - Home page {% endblock title %}
 
 {% block content %}
-    <div class="block">
-        <div class="content-header">
-            Last Update
-        </div>
-        <div class="content">
-            {% for post in last_posts %}
-                <a href="{% url 'blog:post_detail' post.id %}">
-                    <div class="element">
-                        <img src="{{ post.cover.url }}" class="post-img">
-                        <div class="post-content">
-                            <span class="post-header">{{ post.header }}</span>
-                            <span class="post-describe">{{ post.describe }}</span>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="block">
-        <div class="content-header">
-            Most Popular
-        </div>
-        <div class="content">
-            {% for post in popular_posts %}
-                <a href="{% url 'blog:post_detail' post.id %}">
-                    <div class="element">
-                        <img src="{{ post.cover.url }}" class="post-img">
-                        <div class="post-content">
-                            <span class="post-header">{{ post.header }}</span>
-                            <span class="post-describe">{{ post.describe }}</span>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="block">
-        <div class="content-header">
-            News
-        </div>
-        <div class="content">
-            {% for post in last_news_posts %}
-                <a href="{% url 'blog:post_detail' post.id %}">
-                    <div class="element">
-                        <img src="{{ post.cover.url }}" class="post-img">
-                        <div class="post-content">
-                            <span class="post-header">{{ post.header }}</span>
-                            <span class="post-describe">{{ post.describe }}</span>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    </div>
+    {% get_last_posts as last_posts %}
+    {% index_posts_block "Last Update" last_posts %}
+
+
+    {% get_popular_posts as popular_posts %}
+    {% index_posts_block "Most Popular" popular_posts %}
+
+
+    {% get_last_posts "news" as last_news %}
+    {% index_posts_block "Last News" last_news %}
 {% endblock content %}

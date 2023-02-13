@@ -1,0 +1,18 @@
+<div class="index-posts-block">
+    <div class="header large">
+        {{ header }}
+    </div>
+    <div class="content">
+        {% for post in posts %}
+            <div class="element">
+                <a href="{% url 'blog:post_detail' post.id %}">
+                    <img src="{{ post.cover.url }}" class="post-cover small">
+                    <div class="content">
+                        <span class="header small">{{ post.header }}</span>
+                        <span class="content-text">{{ post.describe }}</span>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>

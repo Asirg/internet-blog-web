@@ -1,26 +1,21 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic.base import View, TemplateView
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse
 from django.db.models import QuerySet
 from typing import Any, Dict
 
-from blog.models import Post, Category, Tag, Reaction, Comment
+from blog.models import Post, Tag, Reaction, Comment
 from blog.forms import PostForm
 from blog.service import category_by_kwargs
 from blog.filters import PostFilter
 
 class IndexView(TemplateView):
+    """
+    """
     template_name = 'blog/index.html'
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['last_posts'] = Post.objects.all().order_by('-publication_date')[:5]
-        context['popular_posts'] = Post.objects.all().order_by('-number_of_views')[:5]
-        context['last_news_posts'] = Post.objects.filter(categories__in=[8]).order_by('-publication_date')[:5]
-        return context
 
 class PostDetailView(DetailView):
     model = Post
