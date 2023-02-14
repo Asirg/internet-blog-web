@@ -1,57 +1,57 @@
+
+{% load static %}
 {% load blog_tags %}
-<header class="header">
-    <div class="user-menu">
-        <a href="{% url 'blog:index' %}">
-            <span class="logo">
+<header>
+    <div class="top-menu">
+        <a href="{% url 'blog:index' %}" class="logo">
                 Internet_ Blog
-            </span>
         </a>
-        <div class="option">
-            {% if 'blog.add_post' in perms %}
-                <a href="{% url 'blog:create_post' %}">
-                    new post
-                </a>
-            {% endif %}
-            {% if user.is_authenticated == True and user.profile %}
-                <a href="{% url 'users:profile' user.profile.id %}">
+        <div class="user-menu">
+            {% if user.is_authenticated == True %}
+                <div class="vertical-separator large"></div>
+                {% if 'blog.add_post' in perms %}
+                    <a href="{% url 'blog:create_post' %}" class="text-bold big-text">
+                        new post
+                    </a>
+                {% endif %}
+                <div class="vertical-separator small"></div>
+                <a href="{% url 'users:profile' user.profile.id %}" class="text-bold big-text">
                     profile
                 </a>
-                <span>...</span>
+                <div class="vertical-separator large"></div>
             {% endif %}
-        </div>
-        <div class="search-sign">
-            <form action="{% url 'blog:search' %}" method="get">
-                {% include 'include/search_input.html' %}
-            </form>
             {% if user.is_authenticated == False %}
-                <a href="{% url 'users:registration' %}" class="button-auth registration">
+                <a href="{% url 'users:registration' %}" class="button-link registration medium-text">
                     registration
                 </a>
-                <a href="{% url 'users:login' %}" class="button-auth login">
+                <a href="{% url 'users:login' %}" class="button-link login medium-text">
                     login
                 </a>
             {% else %}
-                <a href="{% url 'users:logout' %}" class="button-auth logout">
+                <a href="{% url 'users:logout' %}" class="button-link logout medium-text">
                     logout
                 </a>
             {% endif %}
         </div>
+        <form action="{% url 'blog:search' %}" method="get">
+            {% include 'include/search_input.html' %}
+        </form>
     </div>
-    <div class="category-menu" id="header-category-menu">
+    <div class="bottom-menu" id="header-category-menu">
         {% get_main_categories as categories %}
-        <div class="main-category">
+        <div class="category-menu">
             {% for category in categories %}
                 <a  href="{% url 'blog:category' category.url %}" 
-                    class="item {% if forloop.counter == 1%}active{% endif %}" 
+                    class="item text-bold big-text {% if forloop.counter == 1%}active{% endif %}" 
                     onmouseenter="header_category_select(event, '{{forloop.counter0}}')">
                     {{ category.name }}
                 </a>
             {% endfor %}
         </div>
         {% for category in categories %}
-            <div class="sub-category {% if forloop.counter == 1%}active{% endif %}">
+            <div class="category-menu sub-category  {% if forloop.counter == 1 %} active {% endif %}">
                 {% for sub_category in category.childs.all %}
-                    <a href="{% url 'blog:category' sub_category.url %}" class="item">
+                    <a href="{% url 'blog:category' sub_category.url %}" class="item text-bold medium-text">
                         {{ sub_category }}
                     </a>
                 {% endfor %}
@@ -59,3 +59,4 @@
         {% endfor %}
     </div>
 </header>
+<link rel="stylesheet" type="text/css" href="{% static 'css/header.css' %}">
