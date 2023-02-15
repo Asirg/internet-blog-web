@@ -30,6 +30,10 @@ class Category(models.Model):
         return self.name
 
     @property
+    def get_cover_url(self):
+        return self.cover.url if self.cover else self.parent.cover.url
+
+    @property
     def get_popular_tags(self):
         posts = Post.objects.filter(categories__in = self.get_sub_categories).distinct()
         tags_count = Post.objects\

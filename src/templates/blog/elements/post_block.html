@@ -1,0 +1,33 @@
+{% load static %}
+
+<div class="row-list">
+    <a href="{% url 'blog:post_detail' post.id %}">
+        <img src ="{{ post.cover.url }}" class="post-cover medium">
+    </a>
+    <div class="post-content column-list">
+        <div class="column-list">
+            <a href="{% url 'blog:post_detail' post.id %}">
+                <span class="header-small">{{ post.header }}</span>
+            </a>
+            <span class="medium-text">{{ post.describe }}</span>
+        </div>
+        <div class="row-list">
+            <img src="{% static 'image/like.png'%}" class="icon small">
+            {{ post.like_count }}
+            <img src="{% static 'image/dislike.png'%}"  class="icon small">
+            {{ post.dislike_count }}
+            <img src="{% static 'image/comment.png'%}"  class="icon small">
+            {{ post.comment_count }}
+            <img src="{% static 'image/tags.png'%}"  class="icon small">
+            {% for tag in post.tags.all %}
+                {% if forloop.counter < 4 %}
+                    <a href="{% url 'blog:search' %}?tag={{tag.name}}">
+                        <div class="tag">
+                            {{ tag }}
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

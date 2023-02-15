@@ -22,7 +22,7 @@ class PostDetailView(DetailView):
 
 class PostByCategoryView(ListView): # Переправить наиспользование тегов
     model = Post
-    paginate_by = 1
+    paginate_by = 5
 
     template_name = 'blog/post_by_category.html'
     

@@ -49,5 +49,5 @@ def get_popular_posts(category: str = '', count: int = 5) -> QuerySet[Post]:
     
 
 @register.simple_tag()
-def get_popular_tags(category: Category, count: int =10) -> QuerySet[Tag]:
+def get_popular_tags(category: str = '', count: int =10) -> QuerySet[Tag]:
     return category.get_popular_tags[:count]

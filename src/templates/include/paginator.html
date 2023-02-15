@@ -1,3 +1,4 @@
+{% load static %}
 {% load blog_tags %}
 {% if page_obj.paginator.num_pages > 1 %}
     <div class="paginantion-wrap">
@@ -32,3 +33,4 @@
         {% endif %}
     </div>
 {% endif %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/paginator.css' %}">
