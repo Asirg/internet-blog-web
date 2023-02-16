@@ -6,11 +6,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Count, Q, Avg, Sum, When, Case
 
 from users.models import Profile
 from users import service
-from blog.models import Comment, Post
 
 class UserRegistrationView(CreateView):
     model = User

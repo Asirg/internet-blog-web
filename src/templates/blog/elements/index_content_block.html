@@ -1,0 +1,10 @@
+<div class="index-posts-block">
+    <div class="header header-large">
+        {{ header }}
+    </div>
+    <div class="content">
+        {% for post in posts %}
+            {% include 'blog/elements/index_post_block.html' %}
+        {% endfor %}
+    </div>
+</div>
