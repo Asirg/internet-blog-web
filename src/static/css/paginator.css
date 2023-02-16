@@ -1,0 +1,11 @@
+.paginantion-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--distance-small);
+}
+
+.paginantion-wrap .current{
+    font-size: var(--text-big-size);
+    font-weight: bold;
+}

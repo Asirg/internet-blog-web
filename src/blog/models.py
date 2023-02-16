@@ -30,6 +30,10 @@ class Category(models.Model):
         return self.name
 
     @property
+    def get_cover_url(self):
+        return self.cover.url if self.cover else self.parent.cover.url
+
+    @property
     def get_popular_tags(self):
         posts = Post.objects.filter(categories__in = self.get_sub_categories).distinct()
         tags_count = Post.objects\
@@ -59,7 +63,7 @@ class Post(models.Model):
     )
 
     header = models.CharField("Header", max_length=80)
-    describe = models.CharField("Describe", max_length=180)
+    describe = models.CharField("Describe", max_length=90)
     cover = models.ImageField("Cover", upload_to="post/")
     content = models.TextField("Content")
     number_of_views = models.PositiveIntegerField("Number of views", default=0)

@@ -1,0 +1,11 @@
+<div class="element">
+    <a href="{% url 'blog:post_detail' post.id %}">
+        <img src="{{ post.cover.url }}" class="post-cover small">
+    </a>
+    <div class="content">
+        <a href="{% url 'blog:post_detail' post.id %}">
+            <span class="header header-small">{{ post.header }}</span>
+        </a>
+        <span class="content-text">{{ post.describe }}</span>
+    </div>
+</div>

@@ -1,48 +1,47 @@
 {% load static %}
-<footer>
+<footer class="column-list">
     <div class="inform">
-        <div class="list">
-            <div class="block">
-                <span class="header">
+        <div class="row-list">
+            <div>
+                <span class="header-large">
                     Navigator
                 </span>
                 <ul>
-                    <li><a href="#">Home page</a></li>
+                    <li><a href="{% url 'blog:index' %}">Home page</a></li>
                     <li><a href="#">...</a></li>
                 </ul>
             </div>
-            <div class="block">
-                <span class="header">
+            <div>
+                <span class="header-large">
                     About Us
                 </span>
                 <ul>
-                    <li><a href="/about">Us</a></li>
-                    <li><a href="#">Author</a></li>
+                    <li><a href="/author">Author</a></li>
                     <li><a href="#">...</a></li>
                 </ul>
             </div>
-            <div class="block">
-                <span class="header">
+            <div>
+                <span class="header-large">
                     Follow Us
                 </span>
                 <ul class="social-network">
                     <li>
                         <a href="#">
-                            <img src="{% static 'image/telegram.png' %}">
+                            <img src="{% static 'image/telegram.png' %}" class="icon small">
                             telegram
                         </a>
-                        </li>
+                    </li>
                     <li>
                         <a href="#">
-                            <img src="{% static 'image/linkedin.png' %}">
+                            <img src="{% static 'image/linkedin.png' %}" class="icon small">
                             linkedin
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="contact">
-            <span class="header">
+        <div class="column-list">
+            <span class="header-large">
                 In_Blog
             </span>
             <span>380 (XX) - XXX - XX - XX</span>
@@ -53,3 +52,4 @@
         Copyright © 2023 All Right Reserved AsirInc
     </span>
 </footer>
+<link rel="stylesheet" type="text/css" href="{% static 'css/footer.css' %}">

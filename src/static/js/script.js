@@ -1,12 +1,5 @@
-pathname = window.location.pathname;
-url = new URL(window.location.href)
-
-// switch(pathname){
-//     case ('/search/'):
-//         searh_page();
-//     break;
-// }
-
+// pathname = window.location.pathname;
+// url = new URL(window.location.href)
 
 active_item = document.querySelector('#header-category-menu .item.active');
 active_sub_category_menu = document.querySelector('#header-category-menu .sub-category.active');
