@@ -3,7 +3,7 @@ from django.views.generic.base import View, TemplateView
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.db.models import QuerySet
 from typing import Any, Dict
 
@@ -19,6 +19,11 @@ class IndexView(TemplateView):
 
 class PostDetailView(DetailView):
     model = Post
+
+    def get(self, request, *args: Any, **kwargs: Any):
+        obj = self.get_object()
+        print(obj.author.profile.number_of_views )
+        return super().get(request, *args, **kwargs)
 
 class PostByCategoryView(ListView): # Переправить наиспользование тегов
     model = Post
@@ -116,7 +121,7 @@ class DeleteCommentView(PermissionRequiredMixin, DeleteView):
 class UpdateCommentView(View):
     def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
-        Comment.objects.filter(pk=comment.pk).update(content=request.POST.get("content"))
+        comment(content=request.POST.get("content")).save()
 
         return JsonResponse(
             {},
@@ -124,9 +129,9 @@ class UpdateCommentView(View):
         )
 
 class AddReactionPostView(LoginRequiredMixin, View):
-
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+    def post(self, request):
+        post = get_object_or_404(Post, pk=request.POST.get('post'))
+        
         Reaction.objects.update_or_create(
             author=request.user,
             post=post,

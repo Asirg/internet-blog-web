@@ -13,6 +13,28 @@ class Profile(models.Model):
     def most_popular_posts(self):
         return self.user.posts.all().order_by('-number_of_views')[:5]
 
+    @property
+    def posts_likes(self):
+        return self.user.posts.all().aggregate(
+            likes = models.Count(
+                'id', 
+                filter=models.Q(reactions__like=True))
+        )
+    
+    @property
+    def posts_dislikes(self):
+        return self.user.posts.all().aggregate(
+            dislikes = models.Count(
+                'id', 
+                filter=models.Q(reactions__like=False))
+        )
+    
+    @property
+    def number_of_views(self):
+        return self.user.posts.all().aggregate(
+            sum=models.Sum('number_of_views')
+        )
+
     def __str__(self):
         return self.user.username
 
