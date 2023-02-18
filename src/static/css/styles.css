@@ -352,7 +352,36 @@ button{
 .post-most-popular .column-list{
     gap: var(--distance-medium);
 }
-/*************************************************/
+
+/***********************************************************************/
+/* POST-DETAIL */
+
+.post-detail-wrap{
+    display: flex;
+    align-items: center;
+}
+
+.post-detail-wrap .category-cover{
+    width: 100%;
+    justify-content: center;
+    margin-bottom: var(--distance-large);
+}
+
+.detail-content, .author-content, .admin-content, .comment-content{
+    background-color: var(--color-dark-blue);
+    width: 70%;
+    padding: var(--distance-big);
+}
+
+.answer-comments{
+    margin-left: var(--distance-large);
+    margin-top: var(--distance-medium);
+}
+
+.answer-comments .avatar.small{
+    height: 30px;
+    width: 30px;
+}
 /***********************************************************************/
 /***********************************************************************/
 /***********************************************************************/
@@ -519,8 +548,6 @@ button{
     background-color: var(--color-green);
     color: var(--color-dark-gray)
 }
-
-
 
 .tab{
     margin-left: 40px;

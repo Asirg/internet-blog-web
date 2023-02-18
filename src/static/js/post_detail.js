@@ -1,15 +1,17 @@
-reactionForm = document.getElementById('form-reaction');
-reactionButtons = reactionForm.querySelectorAll('button');
-reachionCounters = reactionForm.querySelectorAll('.reactions');
+// ////////////////////////////////////////////////////////////////
+///////// Реакции
+const reactionForm = document.getElementById('form-reaction');
+const reactionButtons = reactionForm.querySelectorAll('button');
+const reachionCounters = reactionForm.querySelectorAll('.reactions');
 
-const reactionData = new FormData();
+let reactionData = new FormData();
 reactionData.append('post', reactionForm.querySelector("input[name='post']").value);
 reactionData.append(
     'csrfmiddlewaretoken', 
     reactionForm.querySelector("input[name='csrfmiddlewaretoken']").value
 );
 
-send_reaction = async (url, formData) => {
+send_fetch = async (url, formData) => {
     return await fetch(url, {
         method: 'POST',
         body: formData,
@@ -27,86 +29,87 @@ reactionButtons[1].addEventListener('click', e => {
 reactionForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    send_reaction(e.target.action, reactionData)
+    send_fetch(e.target.action, reactionData)
     .then(result => {
         reachionCounters[0].innerHTML = result['likes'];
         reachionCounters[1].innerHTML = result['dislikes'];
     })
 })
 // ////////////////////////////////////////////////////////////////
-commentForm = document.getElementById('form-comment');
-commentInputParent = commentForm.querySelector('#comment-parent');
-commentInputContent = commentForm.querySelector('#comment-content');
+///////// Ответ на комментарий
+const commentForm = document.getElementById('form-comment');
+const commentInputParent = commentForm.querySelector('#comment-parent');
+const commentInputContent = commentForm.querySelector('#comment-content');
 
-cancelAnswerButton = commentForm.querySelector('#answer-cancel');
-
-function AnswerComment(id, username){
-    commentInputParent.value = id;
+function AnswerComment(id, parent, username){
+    commentInputParent.value = parent ? parent : id;
     commentInputContent.value = `${username}, `
     
     cancelAnswerButton.classList.remove('disabled');
 };
+
+cancelAnswerButton = commentForm.querySelector('#answer-cancel');
 function cancelAnswerComment(){
     commentInputParent.value = '';
     cancelAnswerButton.classList.add('disabled');
 };
 
-// update_mod = false;
+///////// Редактирование комментария
+
+let updateMod = false;
+let updateCommentBlock = false;
+
+function changeUpdateMod(){
+    updateCommentBlock.querySelectorAll('button').forEach(element => {
+        if (['update', 'answer', 'delete'].includes(element.name) && !updateMod)
+            element.classList.remove('disabled');
+        else if (['save-update', 'cancel'].includes(element.name) && updateMod)
+            element.classList.remove('disabled');
+        else
+            element.classList.add('disabled');
+    });
+}
 
 function updateComment(id){
-    if (!update_mod){
-        update_mod = true;
+    if (!updateMod){
+        updateMod = true;
 
-        comment_block = document.getElementById(`comment-${id}`)
-        comment_block.querySelector(".text").classList.add("disabled");
-        comment_block.querySelector(".textarea").classList.remove("disabled");
+        updateCommentBlock = document.getElementById(`comment-${id}`)
 
-        comment_block.querySelector(".textarea").value = comment_block.querySelector(".text").innerHTML;
+        updateCommentBlock.querySelector(".text").classList.add("disabled");
 
-        comment_block.querySelector(".update").classList.add("disabled");
-        comment_block.querySelector(".save-update").classList.remove("disabled");
-        comment_block.querySelector(".cancel").classList.remove("disabled");
+        updateCommentBlock.querySelector("textarea").classList.remove("disabled");
+        updateCommentBlock.querySelector("textarea").value = updateCommentBlock.querySelector(".text").innerHTML;
+
+        changeUpdateMod()
     }
 };
 
-// function cancelUpdateComment(id){
-//     update_mod = false;
+function cancelUpdateComment(){
+    updateMod = false;
 
-//     comment_block = document.getElementById(`comment-${id}`);
-//     comment_block.querySelector(".text").classList.remove("disabled");
-//     comment_block.querySelector(".textarea").classList.add("disabled");
+    updateCommentBlock.querySelector(".text").classList.remove("disabled");
+    updateCommentBlock.querySelector("textarea").classList.add("disabled");
 
-//     comment_block.querySelector(".update").classList.remove("disabled");
-//     comment_block.querySelector(".save-update").classList.add("disabled");
-//     comment_block.querySelector(".cancel").classList.add("disabled");
-// };
+    changeUpdateMod()
+};
 
-// function saveUpdateComment(id){
-//     comment_block = document.getElementById(`comment-${id}`);
+function saveUpdateComment(){
+    newText = updateCommentBlock.querySelector("textarea").value;
+    originalText = updateCommentBlock.querySelector(".text");
 
-//     text = comment_block.querySelector("textarea[name='content']").value;
-//     span_text = comment_block.querySelector("span.text");
+    if (newText != originalText.innerHTML){
+        url = updateCommentBlock.querySelector(".form-update").action;
+        csrf_token = updateCommentBlock.querySelector("input[name='csrfmiddlewaretoken']").value;
 
+        formData = new FormData();
+        formData.append('csrfmiddlewaretoken', csrf_token);
+        formData.append('content', newText);
 
-//     if (text != span_text.innerHTML){
-//         url = comment_block.querySelector(".form-update").action;
-//         csrf_token = comment_block.querySelector("input[name='csrfmiddlewaretoken']").value;
-
-//         formData = new FormData();
-//         formData.append('like', text);
-//         formData.append('csrfmiddlewaretoken', csrf_token);
-//         formData.append('content', text);
-
-//         fetch(
-//             url, {
-//                 method:"post",
-//                 body: formData,
-//             }
-//         ).then(response => response.json())
-//         .then(result => {
-//             span_text.innerHTML = text;
-//             cancelUpdateComment(id);
-//         });
-//     }
-
-// };
+        send_fetch(url, formData)
+        .then(result => {
+            originalText.innerHTML = newText;
+            cancelUpdateComment();
+        });
+    }
+};

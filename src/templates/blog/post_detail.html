@@ -116,162 +116,23 @@
                 <textarea name="content" class="padding-small" cols="50" rows="3" placeholder="..." id="comment-content"></textarea>
             </form>
         {% endif %}
-        <div class="column-list gap-big">
+        <div class="column-list gap-medium">
             {% for comment in post.get_comments %}
-                <div class="row-list gap-small" id="comment-{{ comment.id }}">
-                    <a href="{% url 'users:profile' comment.author.profile.id %}">
-                        <img src='{% user_avatar comment.author.profile %}' class="avatar small">
-                    </a>
-                    <div class="column-list gap-small">
-                        <a href="{% url 'users:profile' comment.author.profile.id %}">
-                            <span class="header-small">{{ comment.author.username }}</span>
-                        </a>
-                        <div class="row-list gap-small">
-                            {% if user.is_authenticated %}
-                                <button type="button" name="answer" class="button-link small login" onclick="AnswerComment('{{ comment.id }}', '{{ comment.author.username }}')">
-                                    ответить
-                                </button>
-                                {% if comment.author == user or 'blog.delete_comment' in perms or post.author == user %}
-                                    <form action="{% url 'blog:delete_comment' comment.id %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" name="delete" class="button-link small logout">
-                                            удалить
-                                        </button>
-                                    </form>
-                                    <form action="{% url 'blog:update_comment' comment.id %}" method="post" class="form-update">
-                                        {% csrf_token %}
-                                        <button type="button" name="update" class="button-link small registration" onclick="UpdateComment('{{ comment.id }}')">
-                                            править
-                                        </button>
-                                        <button type="submit" name="save-update" class="button-link small login disabled" onclick="saveUpdateComment('{{ comment.id }}')">
-                                            сохранить
-                                        </button>
-                                        <button  type="button" name="cancel" class="button-link small logout disabled" onclick="cancelUpdateComment('{{ comment.id }}')">
-                                            отмена
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                        <span class="text">{{ comment.content }}</span>
-                        <textarea class="textarea disabled padding-small" name="content" cols="50" rows="3"></textarea>
-                    </div>
-                </div>
                 <div class="horizontal-separator" ></div>
-                <!-- {% for answ_comment in comment.get_childs %}
-                    <div class="comment-block tab" id="comment-{{ answ_comment.id }}">
-                        <a href="{% url 'users:profile' answ_comment.author.profile.id %}">
-                            <img src='{% user_avatar answ_comment.author.profile %}' class="user-icon">
-                        </a>
-                        <div class="content">
-                            <a href="{% url 'users:profile' answ_comment.author.profile.id %}"></a>
-                                <span class="username">{{ answ_comment.author.username }}</span>
-                            </a>
-                            <span class="text">{{ answ_comment.content }}</span>
-                            <textarea class="textarea disabled" name="content" cols="50" rows="3"></textarea>
-                            <div class="comment-action" style="display:flex; flex-direction:row">
-                                {% if user.is_authenticated %}
-                                    <button class="answer" onclick="setCommentParent('{{ answ_comment.parent.id }}', '{{ answ_comment.author.username }}')">
-                                        ответить
-                                    </button>
-                                    {% if answ_comment.author == user or 'blog.delete_comment' in perms %}
-                                        <form action="{% url 'blog:delete_comment' answ_comment.id%}" method="post">
-                                            {% csrf_token %}
-                                            <input type="hidden" value="{{ answ_comment.id }}" name="comment">
-                                            <button class="delete" type="submit">
-                                                удалить
-                                            </button>
-                                        </form>
-                                        <form action="{% url 'blog:update_comment' answ_comment.id %}" method="post" class="form-update">
-                                            {% csrf_token %}
-                                            <button type="button" class="update" onclick="updateComment('{{ answ_comment.id }}')">
-                                                править
-                                            </button>
-                                            <button type="button" onclick="saveUpdateComment('{{ answ_comment.id }}')"  class="save-update disabled" type="submit">
-                                                сохранить
-                                            </button>
-                                            <button  type="button" class="cancel disabled" onclick="cancelUpdateComment('{{ answ_comment.id }}')">
-                                                отмета
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </div>
+
+                {% include 'blog/elements/comment_block.html' %}
+                
+                {% if comment.get_childs %}
+                    <div class="answer-comments column-list gap-small">
+                        {% for comment in comment.get_childs %}
+                            {% include 'blog/elements/comment_block.html' %}
+                        {% endfor %} 
                     </div>
-                {% endfor %}  -->
+                {% endif %}
+                
              {% endfor %}
         </div>
     </div>
 </div>
 <script type="text/javascript" src="{% static 'js/post_detail.js'%}"></script>
-<style>
-    .post-detail-wrap{
-        display: flex;
-        align-items: center;
-    }
-
-    .post-detail-wrap .category-cover{
-        width: 100%;
-        justify-content: center;
-        margin-bottom: var(--distance-large);
-    }
-
-    .detail-content, .author-content, .admin-content, .comment-content{
-        background-color: var(--color-dark-blue);
-        width: 70%;
-        padding: var(--distance-big);
-    }
-
-    .detail-content img{
-        width: 100%;
-    }
-
-    .comment-block .user-icon{
-        height: 50px;
-        width: 50px;
-        margin: 0px 10px;
-        margin-right: 30px;
-    }
-    .comment-block .content{
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-    .comment-block .text{
-        font-size: var(--text-medium-size);
-        color: var(--color-light-gray);
-        padding: 5px 0px;
-    }
-    .comment-block .answer{
-        /* outline: none; */
-        /* border: none; */
-        background: none;
-
-        color: var(--color-green);
-        font-size: var(--text-small-size);
-    }
-
-    .comment-block .answer, .comment-block .update, .comment-block .delete, .comment-block .cancel, .comment-block .save-update{
-        background: none;
-        margin-right: 5px;
-
-        color: var(--color-green);
-        font-size: var(--text-small-size);
-    }
-    .comment-block .update{
-        color: yellow;
-    }
-    .comment-block .delete{
-        color: red;
-    }
-
-    .comment-block .save-update{
-        color: var(--color-dark-green);
-    }
-
-    .comment-block .cancel{
-        color: orange;
-    }
-</style>
 {% endblock content %}

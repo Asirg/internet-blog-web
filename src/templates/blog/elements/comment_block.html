@@ -1,0 +1,42 @@
+{% load static %}
+{% load users_tags %}
+
+<div class="row-list gap-small" id="comment-{{ comment.id }}">
+    <a href="{% url 'users:profile' comment.author.profile.id %}">
+        <img src='{% user_avatar comment.author.profile %}' class="avatar small">
+    </a>
+    <div class="column-list gap-small">
+        <a href="{% url 'users:profile' comment.author.profile.id %}">
+            <span class="header-small">{{ comment.author.username }}</span>
+        </a>
+        <div class="row-list gap-small">
+            {% if user.is_authenticated %}
+                <button type="button" name="answer" class="button-link small login" onclick="AnswerComment('{{ comment.id }}', '{{ comment.parent.id }}', '{{ comment.author.username }}')">
+                    ответить
+                </button>
+                {% if comment.author == user or 'blog.delete_comment' in perms or post.author == user %}
+                    <form action="{% url 'blog:delete_comment' comment.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="delete" class="button-link small logout">
+                            удалить
+                        </button>
+                    </form>
+                    <form action="{% url 'blog:update_comment' comment.id %}" method="post" class="form-update">
+                        {% csrf_token %}
+                        <button type="button" name="update" class="button-link small registration" onclick="updateComment('{{ comment.id }}')">
+                            править
+                        </button>
+                        <button type="button" name="save-update" class="button-link small login disabled" onclick="saveUpdateComment()">
+                            сохранить
+                        </button>
+                        <button  type="button" name="cancel" class="button-link small logout disabled" onclick="cancelUpdateComment()">
+                            отмена
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        <span class="text">{{ comment.content }}</span>
+        <textarea class="disabled padding-small" name="content" cols="50" rows="3"></textarea>
+    </div>
+</div>

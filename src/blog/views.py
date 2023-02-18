@@ -121,7 +121,8 @@ class DeleteCommentView(PermissionRequiredMixin, DeleteView):
 class UpdateCommentView(View):
     def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
-        comment(content=request.POST.get("content")).save()
+        comment.content = request.POST.get("content")
+        comment.save()
 
         return JsonResponse(
             {},
