@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse, HttpRequest
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from typing import Any, Dict
 
 from blog.models import Post, Tag, Reaction, Comment
@@ -51,15 +51,23 @@ class SearchView(ListView): # Переправить на гет парамет�
 
     def get_queryset(self):
         sort = self.request.GET.get('sort', '-number_of_views')
-        queryset = PostFilter(
-            self.request.GET,
+        queryset = PostFilter({
+                'q': self.request.GET.get('q', ''),
+                'tags__name__in': ','.join(self.request.GET.getlist('tags__name__in')),
+                'categories__name__in': ','.join(self.request.GET.getlist('categories__name__in')),
+            },
             queryset=Post.objects.all().order_by(sort)
         ).qs
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['args'] = self.request.GET
+        context['args'] = {
+            'q': self.request.GET.get('q', ''),
+            'sort': self.request.GET.get('sort', ''),
+            'tags__name__in': self.request.GET.getlist('tags__name__in'),
+            'categories__name__in': self.request.GET.getlist('categories__name__in'),
+        }
         return context
 
 ############################## POST methods
@@ -151,5 +159,9 @@ class AddReactionPostView(LoginRequiredMixin, View):
 class TagJsonView(View):
     def get(self, request):
         q = request.GET.get('q')
-        queryset = Tag.objects.filter(name__contains=q).values("id", "name")[:6]
+        queryset = Tag.objects.filter(
+            ~Q(name__in = request.GET.getlist('tag')),
+            Q(name__contains = q)
+            
+        ).values("id", "name")[:6]
         return JsonResponse(list(queryset), safe=False)
