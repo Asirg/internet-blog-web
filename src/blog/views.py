@@ -3,8 +3,8 @@ from django.views.generic.base import View, TemplateView
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse
-from django.db.models import QuerySet
+from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.db.models import QuerySet, Q
 from typing import Any, Dict
 
 from blog.models import Post, Tag, Reaction, Comment
@@ -19,6 +19,11 @@ class IndexView(TemplateView):
 
 class PostDetailView(DetailView):
     model = Post
+
+    def get(self, request, *args: Any, **kwargs: Any):
+        obj = self.get_object()
+        print(obj.author.profile.number_of_views )
+        return super().get(request, *args, **kwargs)
 
 class PostByCategoryView(ListView): # Переправить наиспользование тегов
     model = Post
@@ -46,15 +51,23 @@ class SearchView(ListView): # Переправить на гет парамет�
 
     def get_queryset(self):
         sort = self.request.GET.get('sort', '-number_of_views')
-        queryset = PostFilter(
-            self.request.GET,
+        queryset = PostFilter({
+                'q': self.request.GET.get('q', ''),
+                'tags__name__in': ','.join(self.request.GET.getlist('tags__name__in')),
+                'categories__name__in': ','.join(self.request.GET.getlist('categories__name__in')),
+            },
             queryset=Post.objects.all().order_by(sort)
         ).qs
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['args'] = self.request.GET
+        context['args'] = {
+            'q': self.request.GET.get('q', ''),
+            'sort': self.request.GET.get('sort', ''),
+            'tags__name__in': self.request.GET.getlist('tags__name__in'),
+            'categories__name__in': self.request.GET.getlist('categories__name__in'),
+        }
         return context
 
 ############################## POST methods
@@ -116,7 +129,8 @@ class DeleteCommentView(PermissionRequiredMixin, DeleteView):
 class UpdateCommentView(View):
     def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
-        Comment.objects.filter(pk=comment.pk).update(content=request.POST.get("content"))
+        comment.content = request.POST.get("content")
+        comment.save()
 
         return JsonResponse(
             {},
@@ -124,9 +138,9 @@ class UpdateCommentView(View):
         )
 
 class AddReactionPostView(LoginRequiredMixin, View):
-
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+    def post(self, request):
+        post = get_object_or_404(Post, pk=request.POST.get('post'))
+        
         Reaction.objects.update_or_create(
             author=request.user,
             post=post,
@@ -145,5 +159,9 @@ class AddReactionPostView(LoginRequiredMixin, View):
 class TagJsonView(View):
     def get(self, request):
         q = request.GET.get('q')
-        queryset = Tag.objects.filter(name__contains=q).values("id", "name")[:6]
+        queryset = Tag.objects.filter(
+            ~Q(name__in = request.GET.getlist('tag')),
+            Q(name__contains = q)
+            
+        ).values("id", "name")[:6]
         return JsonResponse(list(queryset), safe=False)

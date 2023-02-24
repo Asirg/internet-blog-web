@@ -7,10 +7,7 @@ def get_context_for_profile(user):
     context = {}
     context['statistics_all'] = {
         **user.comments.all().aggregate(comments_count=Count('id')),
-        **user.posts.all().aggregate(
-            posts_count=Count('id'),
-            number_of_views_sum=Sum('number_of_views')
-        ),
+        **user.number,
         **user.posts.all().aggregate(
             likes = Count('id', filter=Q(reactions__like=True)),
             dislikes = Count('id', filter=Q(reactions__like=False)),
