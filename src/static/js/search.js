@@ -7,10 +7,12 @@ if (sort)
 
 add_tag_menu = document.getElementById("tags-search-menu");
 added_tags_list = document.getElementById("added-tags-list");
+
 search_menu = document.querySelector('#search-category-menu');
+
 search_main_category_items = search_menu.querySelectorAll('.main-category .item');
-search_active_sub_category_menu = search_menu.querySelector('#search-category-menu .sub-category.active');
-search_sub_category_menus = search_menu.querySelectorAll('#search-category-menu .sub-category');
+search_active_sub_category_menu = search_menu.querySelector('.sub-category.active');
+search_sub_category_menus = search_menu.querySelectorAll('.sub-category');
 
 select_add_tag = false;
 {
@@ -46,9 +48,18 @@ for ( let i = 0; i < search_sub_category_menus.length; i++){
         search_main_category_items[i].classList.add('active');
 }
 
+let getTags = () =>{
+    let tagElements = document.getElementById('added-tags-list').querySelectorAll('input');
+    let tags = '';
+    for (let el = 0; el < tagElements.length; el++){
+        tags += `&tags__name__in=${tagElements[el].value}`
+    }
+    return tags
+}
+
 document.getElementById("add-tags-input").addEventListener('input', e => {
     e.preventDefault();
-    const url = `/tags/?q=${e.target.value}`;
+    const url = `/tags/?q=${e.target.value}${getTags()}`;
     fetch(url, {
             method:'get',
             headers: {
@@ -76,13 +87,13 @@ document.getElementById("add-tags-input").addEventListener('input', e => {
                         add_tag_menu.classList.remove('active');
 
                         let adtag = document.createElement("div");
-                        adtag.classList.add("tag-block");
+                        adtag.classList.add("tag");
                         adtag.innerHTML = value['name'];
                         added_tags_list.appendChild(adtag);
 
                         let adtag_input = document.createElement("input");
                         adtag_input.type = "hidden";
-                        adtag_input.name = "tag";
+                        adtag_input.name = "tags__name__in";
                         adtag_input.value = value['name'];
                         adtag.appendChild(adtag_input);
 

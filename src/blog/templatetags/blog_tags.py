@@ -10,6 +10,7 @@ register = template.Library()
 @register.simple_tag()
 def link_page_with_args(page: int, args: dict) -> str:
     link = f"?page={page}&"
+    print(link)
     if args:
         for key, value in args.items():
             if value != [] and value != '':

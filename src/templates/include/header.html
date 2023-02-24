@@ -2,11 +2,11 @@
 {% load static %}
 {% load blog_tags %}
 <header>
-    <div class="top-menu">
+    <div class="top-menu row-list align-center justify-space-between">
         <a href="{% url 'blog:index' %}" class="logo">
                 Internet_ Blog
         </a>
-        <div class="user-menu">
+        <div class="row-list align-center gap-medium">
             {% if user.is_authenticated == True %}
                 <div class="vertical-separator large"></div>
                 {% if 'blog.add_post' in perms %}
@@ -37,21 +37,21 @@
             {% include 'include/search_input.html' %}
         </form>
     </div>
-    <div class="bottom-menu" id="header-category-menu">
+    <div class="category-menu column-list" id="header-category-menu">
         {% get_main_categories as categories %}
-        <div class="category-menu">
+        <div class="row-list align-center">
             {% for category in categories %}
                 <a  href="{% url 'blog:category' category.url %}" 
-                    class="item text-bold big-text {% if forloop.counter == 1%}active{% endif %}" 
+                    class="item text-bold big-text align-center justify-center {% if forloop.counter == 1%}active{% endif %}" 
                     onmouseenter="header_category_select(event, '{{forloop.counter0}}')">
                     {{ category.name }}
                 </a>
             {% endfor %}
         </div>
         {% for category in categories %}
-            <div class="category-menu sub-category  {% if forloop.counter == 1 %} active {% endif %}">
+            <div class="sub-category {% if forloop.counter == 1 %} active {% endif %}">
                 {% for sub_category in category.childs.all %}
-                    <a href="{% url 'blog:category' sub_category.url %}" class="item text-bold medium-text">
+                    <a href="{% url 'blog:category' sub_category.url %}" class="item text-bold medium-text align-center justify-center">
                         {{ sub_category }}
                     </a>
                 {% endfor %}

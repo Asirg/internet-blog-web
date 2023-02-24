@@ -20,7 +20,7 @@
     </div>
     <div class="post-most-popular column-list">
         <span class="header-large">Most popular</span>
-        <div class="row-list">
+        <div class="tag-list">
             <img src="{% static 'image/tags.png'%}"  class="icon small">
             {% get_popular_tags category as popular_tags %}
             {% for tag in popular_tags %}

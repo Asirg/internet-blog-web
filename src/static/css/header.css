@@ -1,33 +1,11 @@
 header .top-menu{
     border-bottom: solid 1px var(--color-light-gray);
     padding-bottom: var(--distance-small);
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between
-}
-header .user-menu{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--distance-medium);
 }
 /****************************************/
 
-header .bottom-menu{
-    display: flex;
-    flex-direction: column;
-}
-
-.bottom-menu .category-menu{
-    display: flex;
-    align-items: center;
-}
-
-.bottom-menu .sub-category{
+.category-menu .sub-category{
     background-color: var(--color-dark-blue);
-
     display: none;
 }
 
@@ -35,7 +13,6 @@ header .bottom-menu{
     height: var(--distance-large);
     width: 150px;
     
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -44,6 +21,6 @@ header .bottom-menu{
     background-color: var(--color-dark-blue);
 }
 
-.category-menu.sub-category.active{
+.category-menu .sub-category.active{
     display: flex;
 }

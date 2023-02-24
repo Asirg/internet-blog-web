@@ -1,7 +1,8 @@
 {% load static %}
 <div class="search-block-input">
-    <input type="text" placeholder="search..." class="search-input" value="{{ args.q }}" name="q">
+    <input type="text" placeholder="search..." class="search-input" value="{% if args.q %}{{ args.q }}{% endif %}" name="q">
     <button type="submit" class="search-button">
-        <img src="{% static '/image/search.png'%}">
+        <img class="icon little" src="{% static '/image/search.png'%}">
     </button>
 </div>
+<link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
