@@ -1,5 +1,5 @@
 from django.views.generic.base import TemplateView
-from django.views.generic import DetailView, CreateView, DeleteView
+from django.views.generic import DetailView, CreateView, DeleteView, ListView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 
 from users.models import Profile
+from blog.models import Post, Comment
 from users import service
 
 class UserRegistrationView(CreateView):
@@ -45,11 +46,6 @@ class UserProfileView(DetailView):
     model = Profile
     template_name = 'users/profile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.object.user
-        return {**context, **service.get_context_for_profile(user)}
-
 class DeleteUserView(PermissionRequiredMixin, DeleteView):
     model = User
 
@@ -62,13 +58,34 @@ class DeleteUserView(PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse('blog:index')
 
-class UserProfilePostsView(DetailView):
-    model = Profile
+class UserProfilePostsView(ListView):
+    model = Post
     template_name = 'users/user_posts.html'
+    paginate_by = 10
 
-class UserProfileCommentsView(DetailView):
-    model = Profile
+    def get_queryset(self):
+        user = Profile.objects.get(id=self.kwargs['pk']).user
+        return Post.objects.filter(author=user).order_by('-number_of_views')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.get(id=self.kwargs['pk'])
+        return context
+
+class UserProfileCommentsView(ListView):
+    model = Comment
     template_name = 'users/user_comments.html'
+    paginate_by = 20
+
+    def get_queryset(self):
+        print(self)
+        user = Profile.objects.get(id=self.kwargs['pk']).user
+        return Comment.objects.filter(author=user).order_by('-date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.get(id=self.kwargs['pk'])
+        return context
 
 ############################## functions
 def user_logout(request):
