@@ -1,19 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'users/base.html' %}
 
-{% block wrap %}
-    <form action="{% url 'users:registration' %}" method="post" id="register-form">
-        {% csrf_token %}
-        <input type="text" name="username">
-        <input type="text" name="email">
-        <input type="text" name="password">
-        <input type="text" name="first_name">
-        <button type="submit">Enter</button>
-    </form>
-    <script>
-        // form = document.getElementById("register-form");
-        // form.addEventListener('submit', e => {
-        //     e.preventDefault();
-        //     console.log("342423");
-        // });
-    </script>
-{% endblock wrap %}
+{% block content %}
+    <div class="column-list align-center">
+        <div class="content-page-wrapper column-list align-center gap-large">
+            <h1 class="header-large">Registration:</h1>
+            <form action="{% url 'users:registration' %}" method="POST" class="column-list gap-big">
+                {% csrf_token %}
+                <div class="row-list gap-medium">
+                    <div class="column-list gap-small">
+                        <label for="username" class="text-bold"> Username:</label>
+                        <label for="email" class="text-bold"> Email:</label>
+                        <label for="password" class="text-bold"> Password:</label>
+                    </div>
+                    <div class="column-list gap-small">
+                        <input type="text" name="username" required>
+                        <input type="text" name="email">
+                        <input type="password" name="password" required>
+                    </div>
+                </div>
+                <button class="button-link registration" type="submit">registration</button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
