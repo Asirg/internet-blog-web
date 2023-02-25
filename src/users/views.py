@@ -20,8 +20,6 @@ class UserRegistrationView(CreateView):
         self.object = form.save(commit=False)
         self.object.set_password(form.data['password'])
         self.object.save()
-        
-        Profile(user=self.object).save()
 
         login(self.request, self.object)
         return super().form_valid(form)
