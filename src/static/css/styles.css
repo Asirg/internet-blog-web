@@ -195,6 +195,11 @@ button{
     margin-right: var(--distance-big);
 }
 
+.post-cover.big{
+    height: 200px;
+    width: 200px;
+}
+
 .content-text{
     inline-size: 350px;
     overflow-wrap: break-word;
