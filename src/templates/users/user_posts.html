@@ -1,4 +1,14 @@
 {% extends 'users/base.html' %}
 {% block content %}
-    {{ profile.user.posts.all }}
+    <div class="column-list gap-big">
+        <h1 class="header-large row-list">
+            Posts by &nbsp
+            <a href="{% url 'users:profile' profile.id %}">{{ profile.user.username }}</a>
+            :
+        </h1>
+        {% for post in post_list %}
+            {% include 'blog/elements/post_block.html' %}
+        {% endfor %}
+        {% include 'include/paginator.html' %}
+    </div>
 {% endblock content %}

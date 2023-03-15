@@ -195,6 +195,11 @@ button{
     margin-right: var(--distance-big);
 }
 
+.post-cover.big{
+    height: 200px;
+    width: 200px;
+}
+
 .content-text{
     inline-size: 350px;
     overflow-wrap: break-word;
@@ -273,6 +278,11 @@ button{
 .avatar.small{
     height: 50px;
     width: 50px;
+}
+
+.avatar.large{
+    height: 200px;
+    width: 200px;
 }
 /***********************************************************************/
 /* INDEX PAGE */
@@ -387,7 +397,8 @@ button{
     height: 30px;
     width: 30px;
 }
-/* ********************************************* */
+/***********************************************************************/
+/* SEARCH-PAGE */
 .search-block{
     background-color: var(--color-dark-blue);
     padding: var(--distance-big);
@@ -450,6 +461,34 @@ button{
     flex-wrap: wrap;
     align-items: flex-start;
 }
+/***********************************************************************/
+/* USER-PROFILE */
+
+.user-avatar{
+    background-color: var(--color-dark-gray);
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.user-header-name{
+    margin: 40px 0px;
+}
+
+.profile{
+    background-color: var(--color-dark-blue);
+    width: calc(70% - 100px);
+    padding: var(--distance-big) var(--distance-big) var(--distance-big) 120px;
+}
+
+.profile .profile-block{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--distance-medium);
+}
 
 /***********************************************************************/
 /***********************************************************************/
@@ -485,3 +524,10 @@ button{
     font-size: var(--text-big-size);
 }
 
+
+
+.content-page-wrapper{
+    background-color: var(--color-dark-blue);
+
+    padding: var(--distance-big);
+}

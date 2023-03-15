@@ -20,11 +20,6 @@ class IndexView(TemplateView):
 class PostDetailView(DetailView):
     model = Post
 
-    def get(self, request, *args: Any, **kwargs: Any):
-        obj = self.get_object()
-        print(obj.author.profile.number_of_views )
-        return super().get(request, *args, **kwargs)
-
 class PostByCategoryView(ListView): # Переправить наиспользование тегов
     model = Post
     paginate_by = 5

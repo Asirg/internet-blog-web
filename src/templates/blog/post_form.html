@@ -6,7 +6,88 @@
 {% block title %} Internet_blog - new post {% endblock title %}
 
 {% block content %}
-<div>
+<div class="post-form column-list align-center"> 
+    <div class="content-page-wrapper column-list gap-large align-center">
+        <h1 class="header-large">Create New Post</h1>
+        <div class="row-list gap-medium">
+            <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data" class="column-list gap-medium">
+                {% csrf_token %}
+                <input type="hidden" name="author" value="{{ user.id }}">
+
+                <table>
+                    <tr>
+                        <td class="col-1">
+                            <label for="header" class="text-bold">Header:</label>
+                        </td>
+                        <td class="col-2">
+                            <input type="text" name="header" value="" required>
+                        </td>
+                        <td class="col-3">
+                            <label for="cover" class="text-bold">Cover:</label>
+                            <input type="file" name="cover" accept="image/*" id="id_cover" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-1">
+                            <label for="discribe" class="text-bold">Describe:</label>
+                        </td>
+                        <td class="col-2">
+                            <textarea rows="3" name="describe" required></textarea>
+                        </td>
+                        <td rowspan="2" class="col-3">
+                            <img class="post-cover big" src="{% static 'image/like.png' %}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  class="col-1">
+                            <label for="categories" class="text-bold">Categories:</label>
+                        </td>
+                        <td class="col-2">
+                            <select size="7" name="categories" multiple>
+                                <option value="1">sc</option>
+                                <option value="2">sc</option>
+                                <option value="3">sc</option>
+                                <option value="4">sc</option>
+                                <option value="5">sc</option>
+                                <option value="6">sc</option>
+                                <option value="7">sc</option>
+                                <option value="8">sc</option>
+                                <option value="9">sc</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  class="col-1">
+                            <label for="tags" class="text-bold">Tags:</label>
+                        </td>
+                        <td class="col-2">
+                            <input type="text" placeholder="search tags" id="">
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="row-list gap-medium">
+                    <div>111</div><div>111</div><div>111</div><div>111</div><div>111</div>
+                </div>
+
+                <div class="column-list align-center gap-medium">
+                    <span class="header-small">Content:</span>
+                    <div>WIDJECT CKEDITOR</div>
+                </div>
+
+                <div class="row-list gap-large">
+                    <div class="row-list gap-small">
+                        <label for="israw" class="text-bold">Is raw?:</label>
+                        <input type="checkbox" name="is_raw"/>
+                    </div>
+                    <button type="submit" class="button-link login" >Create</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div style="border: 5px solid black">
     <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
@@ -24,4 +105,28 @@
         <button type="submit" >submit</button>
     </form>
 </div>
+<style>
+    .post-form{
+        width: 100%;
+    }
+    .post-form .content-page-wrapper{
+        width: 70%;
+    }
+    .post-form .content-page-wrapper > div{
+        width: 100%;
+    }
+    .post-form .content-page-wrapper form{
+        width: 100%;
+    }
+
+    .col-1{
+        width: 100px;
+    }
+    .col-2{
+        width: calc(100% - 100px - 200px);
+    }
+    .col-3{
+        width: 200px;
+    }
+</style>
 {% endblock content %}
