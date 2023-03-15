@@ -15,3 +15,9 @@ function header_category_select(e, index){
     active_item = e.target;
     active_sub_category_menu = sub_category_menus[index];
 }
+
+const id_file = document.getElementById('id-file');
+if (id_file)
+    id_file.addEventListener('change', e=>{
+        document.querySelector('#form-file').submit();
+    })

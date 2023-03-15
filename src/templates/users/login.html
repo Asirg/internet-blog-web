@@ -1,10 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'users/base.html' %}
 
-{% block wrap %}
-    <form action="{% url 'users:login' %}" method="POST">
-        {% csrf_token %}
-        <input type="text" name="username">
-        <input type="text" name="password">
-        <button type="submit">отправить</button>
-    </form>
-{% endblock wrap %}
+{% block content %}
+    <div class="column-list align-center">
+        <div class="content-page-wrapper column-list align-center gap-large">
+            <h1 class="header-large">Login:</h1>
+            <form action="{% url 'users:login' %}" method="POST" class="column-list gap-big">
+                {% csrf_token %}
+                <div class="row-list gap-medium">
+                    <div class="column-list gap-small">
+                        <label for="username" class="text-bold"> Username:</label>
+                        <label for="username" class="text-bold"> Password:</label>
+                    </div>
+                    <div class="column-list gap-small">
+                        <input type="text" name="username" required>
+                        <input type="password" name="password" required>
+                    </div>
+                </div>
+                <button class="button-link login" type="submit">login</button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,4 +1,21 @@
 {% extends 'users/base.html' %}
 {% block content %}
-    {{ profile.user.comments.all }}
+    <div class="column-list gap-big">
+        <h1 class="header-large row-list">
+            Comments by &nbsp
+            <a href="{% url 'users:profile' profile.id %}">{{ profile.user.username }}</a>
+            :
+        </h1>
+        {% for comment in comment_list %}
+            <div class="column-list gap-medium">
+                <a class="header-small" href="{% url 'blog:post_detail' comment.post.id %}">
+                    {{ comment.post.header }}
+                </a>
+                <span class="text">{{ comment.content }}</span>
+                <span class="text">{{ comment.date }}</span>
+            </div>
+            <div class="horizontal-separator"></div>
+        {% endfor %}
+        {% include 'include/paginator.html' %}
+    </div>
 {% endblock content %}

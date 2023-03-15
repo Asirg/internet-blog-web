@@ -3,197 +3,74 @@
 {% load static %}
 
 {% block content %}
-    <div class="user-avatar">
+    <div class="user-avatar column-list justify-center align-center">
         {% if profile.user == user %}
             <form action="{% url 'users:upload_file' %}" method="post" enctype="multipart/form-data" id="form-file">
                 {% csrf_token %}
                 <label for="id-file">
-                    <img src="{% user_avatar profile %}">
+                    <img class="avatar large" src="{% user_avatar profile %}">
                 </label>
-                <input type="file" name="file" accept="image/png, image/jpeg" required id="id-file">
+                <input hidden type="file" name="file" accept="image/png, image/jpeg" required id="id-file">
             </form>
         {% else %}
-           <img src="{% user_avatar profile %}">
+           <img class="avatar large" src="{% user_avatar profile %}">
         {% endif %}
     </div>
-    <div class="wrap-profile">
-        <h1>
-            {{ profile.user.username }}
-            
-        </h1>
-        <div class="profile">
+    
+    <div class="column-list justify-center align-center">
+        
+        <div class="row-list align-center gap-medium">
+            <h1 class="user-header-name header-large">
+                {{ profile.user.username }}
+            </h1>
             {% if 'users.delete_profile' in perms or profile.user.id == user.id %}
-                <div class="profile-block">
-                    <h1 class="header">Admin Panel</h1>
-                    <form action="{% url 'users:delete_user' profile.user.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit">delete</button>
-                    </form>
-                </div>
+                <form action="{% url 'users:delete_user' profile.user.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="button-link logout">x</button>
+                </form>
             {% endif %}
+        </div>
+
+        <div class="profile column-list gap-large">
+
             <div class="profile-block">
-                <h1 class="header">Statictics</h1>
-                <div class="statistics">
-                    <div class="post-labels">
-                        <h3 class="header">All:</h3>
-                        <img src="{% static 'image/post.png'%}" class="label">Posts: {{ statistics_all.posts_count }}
-                        <img src="{% static 'image/views.png'%}" class="label">Views: {{ statistics_all.number_of_views_sum }}
-                        <img src="{% static 'image/like.png'%}" class="label">Likes: {{ statistics_all.likes }}
-                        <img src="{% static 'image/dislike.png'%}" class="label">Dislikes: {{ statistics_all.dislikes }}
-                        <img src="{% static 'image/comment.png'%}" class="label">Comments: {{ statistics_all.comments_count }}
+                <h1 class="header-large">Statictics</h1>
+                <div class="column-list gap-medium">
+                    <div class="row-list align-center gap-medium">
+                        <span class="text-bold big-text">All:</span>
+                        <img src="{% static 'image/post.png'%}" class="icon small">Posts: {{ statistics_all.posts_count }}
+                        <img src="{% static 'image/views.png'%}" class="icon small">Views: {{ statistics_all.number_of_views_sum }}
+                        <img src="{% static 'image/like.png'%}" class="icon small">Likes: {{ statistics_all.likes }}
+                        <img src="{% static 'image/dislike.png'%}" class="icon small">Dislikes: {{ statistics_all.dislikes }}
+                        <img src="{% static 'image/comment.png'%}" class="icon small">Comments: {{ statistics_all.comments_count }}
                     </div>
-                    <div class="statistics-by-category">
-                        <h3 class="header">By categories:</h3>
-                        <div class="by-category-list">
+                    <div>
+                        <span class="text-bold big-text">By categories:</span>
+                        <div>
                             {% for category in statistics_by_category %}
-                                <div class="post-labels" >
+                                <div class="row-list align-center gap-medium" >
                                     <span>{{ category.name }}: </span>
-                                    <img src="{% static 'image/post.png'%}" class="label">Posts: {{ category.count }}
-                                    <img src="{% static 'image/like.png'%}" class="label">Likes: {{ category.likes }}
-                                    <img src="{% static 'image/dislike.png'%}" class="label">Dislikes: {{ category.dislikes }}
+                                    <img src="{% static 'image/post.png'%}" class="icon small">Posts: {{ category.count }}
+                                    <img src="{% static 'image/like.png'%}" class="icon small">Likes: {{ category.likes }}
+                                    <img src="{% static 'image/dislike.png'%}" class="icon small">Dislikes: {{ category.dislikes }}
                                 </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="profile-block">
-                <h1 class="header">Most Popular Posts</h1>
-                <div class="posts-list">
-                    {% for post in most_popular_posts %}
-                        <a href="{% url 'blog:post_detail' post.id %}">
-                            <div class="post-block">
-                                <img src ="{{ post.cover.url }}" class="post-img">
-                                <div class="post-inf">
-                                    <div class="post-text">
-                                        <span class="post-header">{{ post.header }}</span>
-                                        <span class="post-describe">{{ post.describe }}</span>
-                                    </div>
-                                    <div class="post-labels">
-                                        <img src="{% static 'image/like.png'%}" class="label">
-                                        {{ post.like_count }}
-                                        <img src="{% static 'image/dislike.png'%}"  class="label">
-                                        {{ post.dislike_count }}
-                                        <img src="{% static 'image/comment.png'%}"  class="label">
-                                        {{ post.comment_count }}
-                                        <div class="post-tags">
-                                            <img src="{% static 'image/tags.png'%}"  class="label">
-                                            {% for tag in post.tags.all %}
-                                                <div class="tag-block">
-                                                    {{ tag }}
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    {% endfor %}
-                    <a href="{% url 'users:posts' profile.id %}">
+                <div class="row-list gap-large">
+                    <a class="header-small" href="{% url 'users:posts' profile.id %}">
                         Show all posts
+                    </a>
+                    <a class="header-small" href="{% url 'users:comments' profile.id %}">
+                        Show all comments
                     </a>
                 </div>
             </div>
-            <div class="profile-block">
-                <h1 class="header">Last Comments</h1>
-                <div class="comments-list">
-                    {% for comment in last_comments %}
-                    <div>
-                        <a href="{% url 'blog:post_detail' comment.post.id %}" ><div>{{ comment.post.header }}</div></a>
-                        <div>{{ comment.content }}</div>
-                        <div>{{ comment.date }}</div>
-                    </div>
-                    {% endfor %}
-                    {% if 'blog.delete_comment' in perms or user == profile.user %}
-                        <a href="{% url 'users:comments' profile.id %}">
-                            Show all comments
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
+
         </div>
     </div>
-    <style>
-        img{
-            display: block;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
-        }
-        #id-file{
-            display: none;
-        }
-        .user-avatar{
-            background-color: #2F303A;
-            height: 250px;
-            width: 250px;
-            border-radius: 50%;
-            position: absolute;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        img{
-            height: 200px;
-            width: 200px;
-            border-radius: 100px;
-        }
-        .wrap-profile{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .wrap-profile h1{
-            margin: 50px 0px;
-        }
-        .profile{
-            width: calc(100% - 300px);
-            min-height: 500px;
-            background-color:#464967;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .profile h1{
-            margin: 10px 0px;
-            font-size: 34px;
-        }
-
-        .profile h3{
-            margin: 0px;
-        }
-        
-        .profile .profile-block{
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .profile .post-labels{
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-        }
-
-        .profile-block .statistics{
-            width: calc(100% - 80px);
-            padding: 0px 40px;
-
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .profile-block .statistics h3{
-            margin: 0px;
-            padding: 0px;
-        }
-    </style>
-    <script>
-        document.getElementById('id-file').addEventListener('change', e=>{
-            document.querySelector('#form-file').submit();
-        })
-    </script>
 {% endblock content %}
