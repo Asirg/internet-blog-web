@@ -24,7 +24,7 @@
                         </td>
                         <td class="col-3">
                             <label for="cover" class="text-bold">Cover:</label>
-                            <input type="file" name="cover" accept="image/*" id="id_cover" required>
+                            <input type="file" name="cover" accept="image/*" id="input_post_cover" required>
                         </td>
                     </tr>
                     <tr>
@@ -35,7 +35,7 @@
                             <textarea rows="3" name="describe" required></textarea>
                         </td>
                         <td rowspan="2" class="col-3">
-                            <img class="post-cover big" src="{% static 'image/like.png' %}">
+                            <img class="post-cover big" id="img_post_cover" src="{% static 'image/like.png' %}">
                         </td>
                     </tr>
                     <tr>
@@ -43,16 +43,13 @@
                             <label for="categories" class="text-bold">Categories:</label>
                         </td>
                         <td class="col-2">
-                            <select size="7" name="categories" multiple>
-                                <option value="1">sc</option>
-                                <option value="2">sc</option>
-                                <option value="3">sc</option>
-                                <option value="4">sc</option>
-                                <option value="5">sc</option>
-                                <option value="6">sc</option>
-                                <option value="7">sc</option>
-                                <option value="8">sc</option>
-                                <option value="9">sc</option>
+                            <select size="10" name="categories" multiple>
+                                {% get_main_categories as categories %}
+                                {% for category in categories %}
+                                    {% for sub_category in category.childs.all %}
+                                        <option value="{{ sub_category.id }}">{{ sub_category.name }}</option>
+                                    {% endfor %}
+                                {% endfor %}
                             </select>
                         </td>
                     </tr>
@@ -61,18 +58,22 @@
                             <label for="tags" class="text-bold">Tags:</label>
                         </td>
                         <td class="col-2">
-                            <input type="text" placeholder="search tags" id="">
+                            <div class="append-tags">
+                                <input type="text" id="add-tags-input" placeholder="+tag..." value="" onsubmit="event.preventDefault();">
+                                <div id="add-tags-menu">
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
 
-                <div class="row-list gap-medium">
-                    <div>111</div><div>111</div><div>111</div><div>111</div><div>111</div>
+                <div class="row-list gap-medium" id="add-tags-list">
                 </div>
 
                 <div class="column-list align-center gap-medium">
                     <span class="header-small">Content:</span>
-                    <div>WIDJECT CKEDITOR</div>
+                    {{ content_form }}
+                    {{ content_form.media|safe }}
                 </div>
 
                 <div class="row-list gap-large">
@@ -90,7 +91,7 @@
 <div style="border: 5px solid black">
     <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% for field in form %}
+        <!-- {% for field in form %}
             {% if field.name != 'author' %}
                 <div class="fieldWrapper">
                     {{ field.label_tag }} {{ field }}
@@ -102,7 +103,8 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <button type="submit" >submit</button>
+        <button type="submit" >submit</button> -->
+        {{ form.as_p }} {{ form.media }}
     </form>
 </div>
 <style>
@@ -129,4 +131,107 @@
         width: 200px;
     }
 </style>
+<script>
+    const inputCover = document.getElementById('input_post_cover');
+    const imgCover = document.getElementById('img_post_cover');
+
+    inputCover.addEventListener('change', (e) =>{
+        imgCover.src = URL.createObjectURL(e.target.files[0]);
+    });
+
+    /////////////////
+
+    addTagsInput = document.getElementById('add-tags-input');
+    addTagsMenu = document.getElementById("add-tags-menu");
+    addTagsList = document.getElementById("add-tags-list");
+
+    {
+        select_add_tag = false;
+
+        addTagsMenu.addEventListener('mouseover', e => {
+            select_add_tag = true;
+        });
+        
+        addTagsMenu.addEventListener('mouseleave', e => {
+            select_add_tag = false;
+        });
+        
+        addTagsInput.addEventListener('focusout', e => {
+            e.preventDefault();
+            if (!select_add_tag){
+                addTagsMenu.classList.remove('active');
+            }
+        });
+
+        addTagsInput.addEventListener('focus', e=> {
+            e.preventDefault();
+            addTagsMenu.classList.add('active');
+        });
+    }
+
+    let getTags = () =>{
+        let tagElements = addTagsList.querySelectorAll('input');
+        let tags = '';
+        for (let el = 0; el < tagElements.length; el++){
+            tags += `&tags__name__in=${tagElements[el].value}`
+        }
+        return tags
+    }
+
+    addTagsInput.addEventListener('input', e => {
+        e.preventDefault();
+        const url = `/tags/?q=${e.target.value}${getTags()}`;
+        fetch(url, {
+                method:'get',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+            }
+        })
+        .then(resonse=>resonse.json())
+        .then(result => {
+            addTagsMenu.innerHTML = '';
+            list_result = Object.entries(result);
+
+            if (list_result.length){
+                addTagsMenu.classList.add('active');
+                console.log(list_result);
+                for (const [key, value] of list_result){
+                    
+                    if (!addTagsList.querySelector(`input[value="${value['name']}"]`)){
+
+                        let tag = document.createElement("div");
+                        tag.innerHTML = value['name'];
+                        tag.addEventListener('click', event => {
+                            document.getElementById("add-tags-input").value = "";
+                            
+                            addTagsMenu.innerHTML = "";
+                            addTagsMenu.classList.remove('active');
+
+                            let addTag = document.createElement("div");
+                            addTag.classList.add("tag");
+                            addTag.innerHTML = value['name'];
+                            addTagsList.appendChild(addTag);
+
+                            let addTagInput = document.createElement("input");
+                            addTagInput.type = "hidden";
+                            addTagInput.name = "tags";
+                            addTagInput.value = value['id'];
+                            addTag.appendChild(addTagInput);
+
+                            addTag.addEventListener('click', event => {
+
+                                event.target.remove();
+                            });
+                        })
+                        addTagsMenu.appendChild(tag);
+                    }
+                }
+            }else{
+                addTagsMenu.classList.remove('active');
+            }
+        });
+    })
+
+</script>
 {% endblock content %}
