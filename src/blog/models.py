@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 
+from ckeditor.fields import RichTextField
+
 # Create your models here.
 
 class Tag(models.Model):
@@ -65,10 +67,10 @@ class Post(models.Model):
     header = models.CharField("Header", max_length=80)
     describe = models.CharField("Describe", max_length=90)
     cover = models.ImageField("Cover", upload_to="post/")
-    content = models.TextField("Content")
+    content = RichTextField('content') #models.TextField("Content")
     number_of_views = models.PositiveIntegerField("Number of views", default=0)
     publication_date = models.DateTimeField("Publication date", default=now)
-    is_raw = models.BooleanField("Is raw?")
+    is_raw = models.BooleanField("Is raw?", default=False)
 
     @property
     def get_comments(self):

@@ -5,9 +5,6 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.db.models import QuerySet, Q
-from django import forms
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from ckeditor.widgets import CKEditorWidget
 from typing import Any, Dict
 
 from blog.models import Post, Tag, Reaction, Comment
@@ -73,12 +70,7 @@ class CreatePostView(PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
 
-    permission_required = ('blog.add_post', )
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['content_form'] =  CKEditorWidget().render('', '')
-        return context
+    permission_required = ('blog.add_post', )    
 
     def get_success_url(self) -> str:
         return reverse('blog:post_detail', kwargs={'pk':self.object.id})

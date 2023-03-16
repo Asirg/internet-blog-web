@@ -12,6 +12,7 @@
         <div class="row-list gap-medium">
             <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data" class="column-list gap-medium">
                 {% csrf_token %}
+                <input type="hidden" value="{{ user.id }}" name="author">
                 <input type="hidden" name="author" value="{{ user.id }}">
 
                 <table>
@@ -69,10 +70,10 @@
 
                 <div class="row-list gap-medium" id="add-tags-list">
                 </div>
-
                 <div class="column-list align-center gap-medium">
                     <span class="header-small">Content:</span>
-                    <textarea name="content" cols="40" rows="10" placeholder="content..."></textarea>
+                    {{ form.content }}
+                    {{ form.media }}
                 </div>
 
                 <div class="row-list gap-large">
@@ -86,25 +87,6 @@
             </form>
         </div>
     </div>
-</div>
-<div style="border: 5px solid black">
-    <form action="{% url 'blog:create_post' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <!-- {% for field in form %}
-            {% if field.name != 'author' %}
-                <div class="fieldWrapper">
-                    {{ field.label_tag }} {{ field }}
-                </div>
-            {% else %}
-                <div class="fieldWrapper">
-                    {{ field.label_tag }}
-                    <input type="text" name="author" value="{{ user.id }}" readonly>
-                </div>
-            {% endif %}
-        {% endfor %}
-        <button type="submit" >submit</button> -->
-        {{ form.as_p }} {{ form.media }}
-    </form>
 </div>
 <style>
     .post-form{

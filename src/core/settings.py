@@ -223,5 +223,6 @@ CKEDITOR_CONFIGS = {
             'dialogui',
             'elementspath'
         ]),
+        'width': 'full',
     }
 }
